@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Syllabus - COSC-572/LING-572: Empirical Methods in Natural Language Processing | ENLP |
+      Spring 2019</title>
+
+    <link rel="shortcut icon" href="nlp-icon.png"/>
+
+    <!-- Fonts -->
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300%7CRoboto:300%7CSlabo+27px" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <!--link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"-->
+
+    <!-- Table of contents plugin - add after bootstrap.min.css -->
+    <link rel="stylesheet" href="https://cdn.rawgit.com/afeld/bootstrap-toc/v0.4.1/dist/bootstrap-toc.min.css">
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" crossorigin="anonymous"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!-- Table of contents plugin - add after bootstrap.min.js -->
+    <script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v0.4.1/dist/bootstrap-toc.min.js" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="downloads.js"></script>
+
+    <style type="text/css">
+    /* Override fixed position in table of contents */
+    @media (max-width: 992px) {
+        .affix {
+            position: static;
+        }
+    }
+    @media (min-width: 992px) {
+        .affix {
+            width: inherit;
+            height: 100vh;
+        }
+        .affix > #toc { width: 95%; }
+    }
+    </style>
+</head>
+<body data-spy="scroll" data-target="#toc" class="pg-about">
+  <div class="container-fluid"><div class="row-fluid"><div class="container-fluid">
+
+
+    <div class="sidebar col-xs-12 col-sm-12 col-md-3">
+      <div data-spy="affix" style="z-index: 1000;">
+        <!--<div class="visible-xs-inline">xs</div>
+        <div class="visible-sm-inline">sm</div>
+        <div class="visible-md-inline">md</div>
+        <div class="visible-lg-inline">lg</div>-->
+
+        <nav id="toc" data-toggle="toc"></nav>
+
+      </div>
+
+    </div>
+
+
+
+    <div class="main-region container col-lg-6 col-md-9 col-sm-9 col-xs-12">
+      <h1 class="page-header">
+        <span>Empirical Methods in Natural Language Processing (ENLP)</span><br/>
+        <small><a href="http://cs.georgetown.edu/">COSC</a>-572/<a href="http://linguistics.georgetown.edu/">LING</a>-572 | Spring 2019 @ Georgetown University</small></h1>
+                    <p>Instructor: <b><a href="http://nathan.cl">Nathan Schneider</a></b> ~ TAs: <b>Austin Blodgett</b>, <b>Jakob Prange</b> ~ Lectures: <b>MW 3:30-4:45, Healy&nbsp;103</b></p>
+
+
+
+    <ul class="nav nav-pills" style="margin: 2em auto 2em auto; width: 35em;">
+        <li><a href="index.html">Overview</a></li>
+        <li class="active"><a href="syllabus.html">Syllabus</a></li>
+        <li><a href="schedule.html">Schedule</a></li>
+        <li><a href="https://georgetown.instructure.com/courses/70933">Canvas</a></li>
+        <li><a href="resources.html">Resources</a></li>
+    </ul>
+
+      <div class="main-content">
+
+        <h2 id="synopsis">Synopsis</h2>
+        <p><strong>Empirical Methods in Natural Language Processing (&quot;ENLP&quot;)</strong><br>Lectures: MW 3:30-4:45, Healy&nbsp;103</p>
+        <p>Systems of communication that come naturally to humans are thoroughly unnatural for computers. For truly robust information technologies, we need to teach computers to unpack our language. Natural language processing (NLP) technologies facilitate semi-intelligent artificial processing of human language text. In particular, techniques for analyzing the grammar and meaning of words and sentences can be used as components within applications such as web search, question answering, and machine translation.</p>
+        <p>This course introduces fundamental NLP concepts and algorithms, emphasizing the marriage of linguistic corpus resources with statistical and machine learning methods. As such, the course combines elements of linguistics, computer science, and data science. Coursework will consist of lectures, programming assignments (in Python), and a final team project. The course is intended for students who are already comfortable with programming and have some familiarity with probability theory.</p>
+        <p>Credits: 3</p>
+        <p>Prerequisites: Linguistics students are recommended to complete Intro to NLP (LING-362) before enrolling in this course.</p>
+        <p>(For administrative reasons, registration is divided into two sections: LING-572 and COSC-572. The content and requirements within the course do not differ by registration section.)</p>
+        <h2 id="course-staff-and-office-hours">Course Staff and Office Hours</h2>
+        <p><strong><a href="http://nathan.cl">Nathan Schneider</a></strong><br>nathan.schneider@georgetown.edu<br>Office Hours: Wednesdays, 5:00-6:00 in Poulton Hall 254 or STM 355 (please notify in advance and ask for location)</p>
+          <p>TAs:</p>
+          <ul>
+            <li><strong><a href="http://austinblodgett.name/">Austin Blodgett</a></strong><br/>ajb341@georgetown.edu</li>
+            <li><strong><a href="https://prange.jakob.georgetown.domains/">Jakob Prange</a></strong><br/>jp1724@georgetown.edu</li>
+            <li><strong>TA Office Hours:</strong> Mondays 12&ndash;1 in STM 3rd floor common area</li>
+          </ul>
+          <h2 id="textbook">Textbook</h2>
+          <p>You do not need to purchase a textbook. We will use PDF drafts from <a href="http://web.stanford.edu/~jurafsky/slp3/"><em>Speech and Language Processing</em> (3nd ed.)</a> by Dan Jurafsky and James H. Martin (&quot;SLP&quot;).</p>
+          <h2 id="assessments">Assessments</h2>
+          <p>The primary assessments in this course are several focused homework assignments (35%), a substantial team project (20%), the final exam (20% of overall grade), and the midterm exam (15%). The remaining 10% will be determined based on participation.</p>
+          <h3 id="homework-assignments-25-">Homework Assignments (35%)</h3>
+          <p>These are focused exercises that reinforce the concepts and algorithms presented in lecture. They will involve some Python coding, some data analysis, and answering some written questions.</p>
+          <h3 id="exams-40-">Exams (35%)</h3>
+          <p>Both of these are listed in the schedule: the midterm takes place during a class period and the final is scheduled per university policy. The final will be cumulative, but place greater emphasis on material covered in the second half of the course. Calculators/computers are not permitted in either exam.</p>
+          <h3 id="team-project-25-">Team Project (20%)</h3>
+          <p>A substantial interdisciplinary team project, defined and executed by the team members with guidance from the course staff, will serve as an opportunity to put the ideas from the course into practice. Details will be forthcoming at a later date.</p>
+          <h3 id="participation-10-">Participation (10%)</h3>
+          <p>This credit comes from activities such as:</p>
+          <ul>
+            <li>Short pop quizzes in class.</li>
+            <li>Speaking up in class.</li>
+            <li>Giving a small presentation in one class session (details TBA).</li>
+          </ul>
+          <h2 id="communication">Communication</h2>
+          <p>A public course website will be maintained with the syllabus, schedule, and lecture slides: <a href="http://people.cs.georgetown.edu/cosc572/">http://people.cs.georgetown.edu/cosc572/</a> a.k.a. <a href="http://tiny.cc/enlp">http://tiny.cc/enlp</a></p>
+          <p>The <strong>Canvas</strong> platform will be used to host content accessible only to members of the course. It provides a discussion forum, a way to submit coursework, and other tools. Log into Canvas at <a href="https://georgetown.instructure.com/">https://georgetown.instructure.com/</a> using your NetID. Students are automatically added when they are enrolled in the course. (The course name in Canvas is displayed as &quot;COSC-572-01&quot;, but it actually includes all sections of the course, including LING-572.)</p>
+          <p>The Canvas discussion forum is the recommended virtual venue for asking and answering course-related questions. Instructors will monitor the forum and post replies from time to time, but we cannot promise immediate attention to every question.</p>
+          <p>The most direct way to contact instructors is through email.</p>
+          <h2 id="computing-resources">Computing Resources</h2>
+          <p>Students will be granted remote login (SSH) access to a Unix server with the <a href="https://docs.continuum.io/anaconda/">Anaconda</a> distribution of Python 3.5 installed. If you wish to run Python code on your own machine, you are strongly encouraged to install the same Anaconda distribution
+            to avoid compatibility hassles. It is available for Windows, Mac OS X, and Linux machines.</p>
+            <h2 id="attendance-and-late-policy">Attendance and Late Policy</h2>
+            <p>In general, students are expected to attend all classes and to complete all assignments on time.
+              Absences may have an adverse effect on grades in a course, up to and including failure.</p>
+              <p>That being said, we understand that circumstances may arise preventing you from attending class.
+                Please email the instructors ASAP to communicate any <strong>expected</strong> absences.
+                For example, inform us at the beginning of the semester about planned religious observances or athletic travel.</p>
+                <p>Late assignments are subject to a penalty of 15% of the grade for each day past the deadline.
+                  At the discretion of the instructors, a deadline may be adjusted for a student if there are special circumstances communicated to
+                  the instructors well in advance.
+                  11th-hour requests for an extension to an assignment
+                  are unlikely to be granted absent truly exceptional circumstances.</p>
+                  <p>Students who miss multiple classes due to <strong>prolonged illness</strong> should seek medical care
+                    and provide documentation of such to the Dean’s Office, which will communicate with the student’s professors.
+                    A prolonged absence may necessitate the student’s withdrawal from the course or from the University for the semester.</p>
+                    <p>More information and resources:</p>
+                    <ul>
+                      <li><a href="http://bulletin.georgetown.edu/regulation/standards">http://bulletin.georgetown.edu/regulation/standards</a></li>
+                      <li><a href="http://academicsupport.georgetown.edu/">http://academicsupport.georgetown.edu/</a></li>
+                      <li><a href="http://studenthealth.georgetown.edu/mental-health">http://studenthealth.georgetown.edu/mental-health</a></li>
+                    </ul>
+                    <h2 id="academic-integrity">Academic Integrity</h2>
+                    <p>In this course, you will be asked to participate at times as an individual and at times working in a group.
+                      Exams should be completed entirely on your own. Exam questions should not be posted online or disclosed to other students who have not yet taken the exam (and the same goes for official answers to homework assignments).</p>
+                      <p><strong>For homework assignments, you are expected to write code/text and perform analyses yourself unless directed otherwise.</strong> I.e., don&#39;t copy solutions from other students or share yours with them. But you are encouraged to discuss concepts and implementation stumbling blocks with fellow students, within reason. The online discussion forum and office hours are good opportunities for this.</p>
+                      <p>Part of treating others with respect is giving appropriate credit for ideas and scholarly works (including code).
+                        <strong>If you consult with other students on an assignment, report this in the work that you turn in.
+                          If in your code you use a library or implementation from another source, indicate that as well (minimally by including a URL in a comment).</strong>
+                          Instructors reserve the right to request an oral explanation of answers.</p>
+                          <p>Course projects are intended to be highly collaborative, and the final project writeup should include a synopsis of who has contributed what. Version control software should be used in development for the final project. (Version control can also be used for homework assignments, provided that you ensure that other students do not have access to your solutions.)</p>
+                          <p>In research writing, it is important to give credit to other research that provides specific foundations to your work, as well as to published work that is closely related. If you discuss ideas/information from a publication, be sure to cite it; if you reuse the specific phrasing of other work, use quotation marks.
+                            Knowing when and how to give credit can be tricky at times, so when in doubt, ask!</p>
+                            <p>For more information:</p>
+                            <ul>
+                              <li><a href="http://bulletin.georgetown.edu/regulations/honor">http://bulletin.georgetown.edu/regulations/honor</a></li>
+                            </ul>
+                            <h2 id="notice-regarding-sexual-misconduct">Notice Regarding Sexual Misconduct</h2>
+                            <p>Please know that as a faculty member I am committed to supporting survivors of sexual misconduct, including relationship violence, sexual harassment and sexual assault. University policy also requires me to report any disclosures about sexual misconduct to the Title IX Coordinator, whose role is to coordinate the University’s response to sexual misconduct.</p>
+                            <p>Georgetown has a number of fully confidential professional resources who can provide support
+                              and assistance to survivors of sexual assault and other forms of sexual misconduct. These
+                              resources include:</p>
+                              <p>Jen Schweer, MA, LPC<br>Associate Director of Health Education Services for Sexual Assault Response and Prevention<br>(202) 687-0323<br>jls242@georgetown.edu</p>
+                              <p>Erica Shirley, Trauma Specialist<br>Counseling and Psychiatric Services (CAPS)<br>(202) 687-6985<br>els54@georgetown.edu</p>
+                              <p>More information about campus resources and reporting sexual misconduct can be found at <a href="http://sexualassault.georgetown.edu">http://sexualassault.georgetown.edu</a>.</p>
+
+      </div>
+
+
+    </div>
+
+    <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+
+    </div>
+  </div></div></div>
+</body>
+</html>

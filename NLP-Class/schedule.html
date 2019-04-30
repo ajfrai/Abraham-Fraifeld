@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Schedule - COSC-572/LING-572: Empirical Methods in Natural Language Processing | ENLP |
+      Spring 2019</title>
+
+    <link rel="shortcut icon" href="nlp-icon.png"/>
+
+    <!-- Fonts -->
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300%7CRoboto:300%7CSlabo+27px" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <!--link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"-->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" crossorigin="anonymous"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="downloads.js"></script>
+
+    <style type="text/css">
+      .unitname { font-weight: bold; }
+      tr > td:first-child { text-align: center; }
+      tr:not(.warning) > td:nth-child(3) { font-weight: bold; }
+      tr.next > td:first-child { border-left: solid 4px #c00; }
+      tr.next > td:last-child { border-right: solid 4px #c00; }
+    </style>
+    <script type="text/javascript">
+      $(function () {
+        // examine dates and find the current or upcoming one
+        var thisMonth = new Date().getMonth()+1;
+        var thisDate = new Date().getDate();
+        var encounteredNext = false;
+
+        // mark cells that are not date fields but are technically the 2nd column due to rowspan
+        // see http://stackoverflow.com/questions/4402861/jquery-to-select-last-cell-in-a-column-when-using-rowspan
+        var skip = $();
+        $('#schedule > tbody > tr > td:nth-child(2)').each(function() {
+            skip = skip.add($(this).parent().nextAll().slice(0, $(this).attr('rowspan') - 1));
+        });
+
+        // date fields in chronological order
+        $('#schedule > tbody > tr').not(skip).children('td:nth-child(2)').each(
+          function (j) {
+            var t = $(this).text();
+            if (encounteredNext!==false && t!=encounteredNext && !t.startsWith(encounteredNext+'-'))
+              return;
+            var m = t.match(/^([0-9]+)\/([0-9]+)/);
+            if (Number(m[1])<thisMonth || (Number(m[1])==thisMonth && Number(m[2])<thisDate))
+              return;
+            if (encounteredNext===false)
+              encounteredNext = t;
+            $(this).parent().addClass("next");
+          }
+        );
+      });
+    </script>
+</head>
+
+<body class="pg-about">
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="container-fluid">
+
+                <div class="sidebar col-lg-3 col-md-2 col-sm-2 col-xs-12">
+
+                </div>
+
+                <div class="top-region container col-lg-6 col-md-8 col-sm-8 col-xs-12">
+                    <h1 class="page-header">
+        <span>Empirical Methods in Natural Language Processing (ENLP)</span><br/>
+        <small><a href="http://cs.georgetown.edu/">COSC</a>-572/<a href="http://linguistics.georgetown.edu/">LING</a>-572 | Spring 2019 @ Georgetown University</small></h1>
+                    <p>Instructor: <b><a href="http://nathan.cl">Nathan Schneider</a></b> ~ TAs: <b>Austin Blodgett</b>, <b>Jakob Prange</b> ~ Lectures: <b>MW 3:30-4:45, Healy&nbsp;103</b></p>
+
+
+                    <ul class="nav nav-pills" style="margin: 2em auto 2em auto; width: 35em;">
+                        <li><a href="index.html">Overview</a></li>
+                        <li><a href="syllabus.html">Syllabus</a></li>
+                        <li class="active"><a href="schedule.html">Schedule</a></li>
+                        <li><a href="https://georgetown.instructure.com/courses/70933">Canvas</a></li>
+                        <li><a href="resources.html">Resources</a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar col-lg-3 col-md-2 col-sm-2 col-xs-12">
+
+                </div>
+
+            </div>
+
+            <div class="container">
+
+                <div class="col-xs-0 col-sm-1"></div>
+
+                <div class="main-content col-xs-12 col-sm-11 col-md-10">
+
+                    <p style="text-align: center"><i>This schedule is <b>tentative</b> and subject to change
+                      as the semester progresses.</i></p>
+
+                        <table id="schedule" class="table table-striped table-hover">
+                            <tbody id="36">
+                              <thead>
+                                <tr id="107">
+                                    <th colspan="2">Date</th>
+                                    <th></th>
+                                    <th>Lecture</th>
+                                    <th>Reading</th>
+                                    <th>Assignment</th>
+                                </tr>
+                              </thead>
+
+
+                                <tr class="info">
+                                  <th colspan="3"></th><th class="unitname">Introduction, N-grams</th><th colspan="2"></th>
+                                </tr>
+                                <tr id="165">
+                                    <td>W</td>
+                                    <td>1/9</td>
+                                    <td>1</td>
+                                    <td><a href="01_slides.pdf">What is NLP?</a></td>
+                                    <td>SLP2 <a href="https://georgetown.instructure.com/files/2231348/download?download_frd=1">ch. 1</a></td>
+                                    <td><a href="a0/">A0: The Basics</a></td>
+                                </tr>
+
+                                <tr id="252">
+                                    <td>M</td>
+                                    <td>1/14</td>
+                                    <td>2</td>
+                                    <td>🌨❄⛄</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+
+                                <tr id="281">
+                                    <td>W</td>
+                                    <td>1/16</td>
+                                    <td>3</td>
+                                    <td><a href="02a_slides.pdf">Why do we need data?</a>; <a href="02b_TextProc.pdf">Basic Text Processing (Regular Expressions, Normalization)</a></td>
+                                    <td><a href="02_py-notes.html">Working with text in Python 3</a>, SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/2.pdf">2.0&ndash;2.3</a>, <a href="http://www.nltk.org/book/ch03.html">NLTK Book 3.2&ndash;3.10</a></td>
+                                    <td>A0 due</td>
+                                </tr>
+                                <tr id="223" class="active">
+                                    <td>M</td>
+                                    <td>1/21</td>
+                                    <td colspan="2"><i>No class or office hours: MLK Day</i></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <!--<tr class="info">
+                                    <th colspan="3"></th><th class="unitname">N-grams</th><th colspan="2"></th>
+                                </tr>-->
+
+                                <tr id="310">
+                                    <td>W</td>
+                                    <td>1/23</td>
+                                    <td>4</td>
+                                    <td><a href="03_LM_slides.pdf">N-gram language models</a></td>
+                                    <td>SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/3.pdf">3.0&ndash;3.4.2</a>;
+                                    <a href="http://homepages.inf.ed.ac.uk/sgwater/teaching/general/probability.pdf">Goldwater probability review</a> through section 4</td>
+                                    <td><a href="a1/">A1: Language Models</a></td>
+                                </tr>
+                                <!--<tr id="339">
+                                    <td>F</td>
+                                    <td>1/25</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>-->
+
+                                <tr id="426">
+                                    <td>M</td>
+                                    <td>1/28</td>
+                                    <td>5</td>
+      <!--<td><a href="06_LM2_slides.pdf">Language models: more smoothing</a></td>
+      <td>
+        SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/7.pdf">7.2&ndash;7.3</a>, <a href="http://web.stanford.edu/~jurafsky/slp3/18.pdf">18.0&ndash;18.5</a></td>-->
+                                    <td><a href="04_ling.pdf">Overview of Linguistics</a></td>
+                                    <td>SLP2 <a href="https://georgetown.instructure.com/files/2231348/download?download_frd=1" title="grammar">1.1</a>,
+                                      <a href="https://georgetown.instructure.com/files/2231349/download?download_frd=1" title="typology">25.1</a></td>
+                                    <td></td>
+                                </tr>
+
+                                <tr class="info">
+                                    <th colspan="3"></th><th class="unitname">Classification</th><th colspan="2"></th>
+                                </tr>
+
+                                <tr id="455">
+                                    <td>W</td>
+                                    <td>1/30</td>
+                                    <td>6</td>
+                                    <td><a href="05_NB_classification_noisy_channel.pdf">Classification: naïve Bayes; Noisy Channel Model</a></td>
+                                    <td>SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/4.pdf" title="NB for sentiment">4.0&ndash;4.5</a></td>
+                                    <td></td>
+                                </tr>
+                                <tr id="54200">
+                                    <td>F</td>
+                                    <td>2/1</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>A1 due</td>
+                                </tr>
+
+                                <tr id="513">
+                                    <td>M</td>
+                                    <td>2/4</td>
+                                    <td>7</td>
+                                    <td><a href="06a_lexsem_slides.pdf">Lexical semantics: senses, relations, classes</a>;
+                                        <a href="06b_linear-models.pdf">Linear models for classification: features &amp; weights</a></td>
+                                    <td><a href="http://web.stanford.edu/~jurafsky/slp3/C.pdf" title="Word senses, WordNet">Appendix C.0&ndash;C.2</a>, <a href="http://web.stanford.edu/~jurafsky/slp3/5.pdf" title="Features in logistic regression">5.0&ndash;5.1</a></td>
+                                    <td></td>
+                                </tr>
+
+
+
+
+                                <tr class="info">
+                                    <th colspan="3"></th><th class="unitname">Sequential Prediction</th><th colspan="2"></th>
+                                </tr>
+                                <tr id="542">
+                                    <td>W</td>
+                                    <td>2/6</td>
+                                    <td>8</td>
+                                    <td><a href="07_discriminative.pdf">Linear models for classification: discriminative learning (perceptron, SVMs, MaxEnt)</a></td>
+                                    <td>Daumé <a href="http://www.ciml.info/dl/v0_99/ciml-v0_99-ch04.pdf">The Perceptron: 4.0&ndash;4.3</a>;
+                                      SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/4.pdf" title="precision/recall/F-score, train/dev/test/cross-val">4.7&ndash;4.8</a>,
+                                      <a href="http://web.stanford.edu/~jurafsky/slp3/5.pdf" title="logistic regression, regularization">ch. 5</a>
+                                      <i>(Further readings are suggested in slides)</i></td>
+                                    <td><a href="a2/">A2: Perceptron</a></td>
+                                </tr>
+
+
+
+                                <tr id="658">
+                                    <td>M</td>
+                                    <td>2/11</td>
+                                    <td>9</td>
+                                    <td>Linear models: discriminative learning (contd.); <a href="08_pos_slides.pdf">Parts of speech</a></td>
+                                    <td>SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/8.pdf" title="POS">8.0&ndash;8.3</a>;
+                                    Eisenstein <a href="https://github.com/jacobeisenstein/gt-nlp-class/blob/master/notes/eisenstein-nlp-notes.pdf?raw=true">Notes</a>, 7.1: Part-of-speech tagging</td>
+                                    <td></td>
+                                </tr>
+
+
+
+
+
+
+                                <tr id="687">
+                                    <td>W</td>
+                                    <td>2/13</td>
+                                    <td>10</td>
+                                    <td><a href="09_pos_hmm_slides.pdf">POS tagging: HMMs</a></td>
+                                    <td>SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/8.pdf" title="HMM">8.4.0&ndash;8.4.3, 8.4.9</a></td>
+                                    <td></td>
+                                </tr>
+
+
+                                <tr id="5420">
+                                    <td>F</td>
+                                    <td>2/15</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>Midterm review session (Austin and Jakob): 1:15 in STM 326</td>
+                                </tr>
+                                <tr id="745" class="active">
+                                    <td>M</td>
+                                    <td>2/18</td>
+                                    <td colspan="3"><i>No class or office hours: Presidents' Day</i> (class on Tuesday instead)</td>
+                                    <td>A2 due</td>
+                                </tr>
+
+                                <tr id="803">
+                                    <td><b>Tu</b></td>
+                                    <td>2/19</td>
+                                    <td>11</td>
+                                    <td><a href="10_viterbi_slides.pdf">Algorithms for HMMs (mainly Viterbi)</a></td>
+                                    <td>SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/8.pdf" title="Viterbi">8.4.4&ndash;8.4.8</a>, <a href="http://web.stanford.edu/~jurafsky/slp3/A.pdf" title="Algorithms for HMM">Appendix A</a></td>
+                                    <td><a href="a3/">A3: HMM</a></td>
+                                </tr>
+
+
+                                <tr id="832">
+                                    <td>W</td>
+                                    <td>2/20</td>
+                                    <td>12</td>
+                                    <td>Universal POS annotation activity (<a href="http://people.cs.georgetown.edu/nschneid/p/UPOS-English.pdf">tagset</a>)
+                                    <i>online due to 🌨❄⛄</i></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+
+
+
+
+                                <tr id="832" class="success">
+                                    <td>M</td>
+                                    <td>2/25</td>
+                                    <td>13</td>
+                                    <td>MIDTERM EXAM</td>
+                                    <td><a href="midterm-review.html">Study guide</a></td>
+                                    <td></td>
+                                </tr>
+                                <!--<tr id="774">
+                                    <td></td>
+                                    <td>MIDTERM REVIEW</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>-->
+                                <tr id="861">
+                                    <td>W</td>
+                                    <td>2/27</td>
+                                    <td>14</td>
+                                    <td>Annotation activity contd.; <a href="11_annotation_slides.pdf">Annotation</a>; <a href="12_discriminative-sequence.pdf">Discriminative tagging with the structured perceptron</a></td>
+                                    <td>Eisenstein <a href="https://github.com/jacobeisenstein/gt-nlp-class/blob/master/notes/eisenstein-nlp-notes.pdf?raw=true">Notes</a>, 6.5 (no need to read beyond structured perceptron);
+                                    <a href="http://www.phontron.com/slides/nlp-programming-en-12-struct.pdf">Neubig slides</a></td>
+                                    <td></td>
+
+                                </tr>
+
+                                    <!--<td>Working with Unix: <a href="http://www.pitt.edu/%7Enaraehan/2015-10-14-commandline-magic.pdf">text processing</a>;
+                                      <a href="03_version-control_slides.pdf">version control with git</a></td>
+                                    <td><a href="https://github.com/nschneid/unix-text-commands">Unix Text Commands</a>,
+                                      <a href="https://github.com/nschneid/git-command-overview">Git&nbsp;Commands</a></td>
+                                    <td></td>
+                                </tr>-->
+                                <tr id="8610">
+                                    <td>F</td>
+                                    <td>3/1</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><s>A3: HMM due</s></td>
+                                </tr>
+                                <tr id="223" class="active">
+                                    <td>M-F</td>
+                                    <td>3/4-8</td>
+                                    <td colspan="2"><i>No class or office hours: Spring Break</i></td>
+                                    <td></td>
+                                    <td>A3: HMM due W 3/6</td>
+                                </tr>
+                                <tr class="info">
+                                    <th colspan="3"></th><th class="unitname">Distributed Representations and Neural Networks</th><th colspan="2"></th>
+                                </tr>
+                                <tr id="919">
+                                    <td>M</td>
+                                    <td>3/11</td>
+                                    <td>15</td>
+                                    <td><a href="13_distributional_semantics_lecture.pdf">Distributional representations and similarity</a></td>
+                                    <td>SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/6.pdf">ch. 6</a></td>
+                                    <td></td>
+                                </tr>
+                                <tr id="948">
+                                    <td>W</td>
+                                    <td>3/13</td>
+                                    <td>16</td>
+                                    <td><a href="14_deep_learning.pdf">Deep learning and neural networks</a></td>
+                                    <td>SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/7.pdf">7.0&ndash;7.1, 7.3&ndash;7.5</a>
+                                      <!--Recommended by James:
+Nielsen <a href="http://neuralnetworksanddeeplearning.com/index.html"><i>Neural Networks and Deep Learning</i></a>,
+<a href="http://colah.github.io/">Cristopher Olah's blog</a>,
+Rojas&nbsp;<a href="http://page.mi.fu-berlin.de/rojas/neural/neuron.pdf"><i>Neural Networks</i></a>,
+Goodfellow et&nbsp;al. <a href="http://www.deeplearningbook.org/"><i>Deep Learning</i></a>.
+Also: Dyer et&nbsp;al. <a href="https://github.com/clab/dynet_tutorial_examples">Practical Neural Networks for NLP</a>--></td>
+                                    <td></td>
+                                </tr>
+                                <tr id="977">
+                                    <td>M</td>
+                                    <td>3/18</td>
+                                    <td>17</td>
+                                    <td><a href="15_rnns.pdf">Neural sequence modeling with RNNs</a> (Jakob)</td>
+                                    <td>SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/9.pdf" title="RNNs">ch. 9</a></td>
+                                    <td><a href="a4/">A4: LSTMs</a></td>
+                                </tr>
+
+                                <tr class="info">
+                                    <th colspan="3"></th><th class="unitname">Hierarchical Sentence Structure</th><th colspan="2"></th>
+                                </tr>
+                                <tr id="1006">
+                                    <td>W</td>
+                                    <td>3/20</td>
+                                    <td>18</td>
+                                    <td><a href="16_syntax_slides.pdf">English syntax, CFGs</a></td>
+                                    <td>SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/10.pdf" title="CFGs for English">10.0&ndash;10.3, skim 10.4</a></td>
+                                    <td></td>
+                                </tr>
+                                <tr id="10060">
+                                    <td>F</td>
+                                    <td>3/22</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>P0: Suggest possible topics, form project teams</td>
+                                </tr>
+                                <tr id="1064">
+                                    <td>M</td>
+                                    <td>3/25</td>
+                                    <td>19</td>
+                                    <td>Syntax contd.; forming project teams</td>
+                                    <td></td>
+                                    <td></td>
+
+                                </tr>
+                                <tr id="1151">
+                                    <td>W</td>
+                                    <td>3/27</td>
+                                    <td>20</td>
+                                    <td><a href="17_parsing_slides.pdf">(P)CFG parsing</a></td>
+                                    <td>SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/11.pdf" title="CFGs, CKY">11.0&ndash;11.2</a>,
+                                      <a href="http://web.stanford.edu/~jurafsky/slp3/12.pdf" title="PCFGs, prob. CKY, training">12.0&ndash;12.4</a></td>
+                                    <td></td>
+                                </tr>
+                                <tr id="100600">
+                                    <td>F</td>
+                                    <td>3/29</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>A4 due</td>
+                                </tr>
+                                <tr id="1209">
+                                    <td>M</td>
+                                    <td>4/1</td>
+                                    <td>21</td>
+                                    <td>(P)CFG parsing contd.</td>
+                                    <td></td>
+                                    <td><a href="a5/">A5: Syntax</a>; P1: 1-2 page proposal due</td>
+                                </tr>
+
+
+                                <tr class="info">
+                                    <th colspan="3"></th><th class="unitname">Other Learning Paradigms and Applications</th><th colspan="2"></th>
+                                </tr>
+                                <tr id="1238">
+                                    <td>W</td>
+                                    <td>4/3</td>
+                                    <td>22</td>
+                                    <td><a href="18_dependency-parsing_slides.pdf">Dependency parsing</a> (includes bonus slides not covered in class)</td>
+                                    <td>SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/13.pdf" title="transition-based dependency parsing, eval">13.0&ndash;13.4.1, 13.6</a></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>W-Th</td>
+                                    <td>4/3-4</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>P2: groups meet with instructor &amp; TA</td>
+                                </tr>
+                                <tr id="1325">
+                                    <td>M</td>
+                                    <td>4/8</td>
+                                    <td>23</td>
+                                    <td><a href="19_srl_slides.pdf">Semantic role labeling</a></td>
+                                    <td>SLP3 <a href="http://web.stanford.edu/~jurafsky/slp3/14.pdf" title="Meaning representation">14.0</a>, <a href="http://web.stanford.edu/~jurafsky/slp3/18.pdf" title="argument structure, SRL basics">ch. 18, pp. 1&ndash;10</a></td>
+                                    <td></td>
+                                </tr>
+                                <tr id="1383">
+                                    <td>W</td>
+                                    <td>4/10</td>
+                                    <td>24</td>
+                                    <td><a href="20_MT_slides.pdf">Statistical machine translation I</a></td>
+                                    <td>SLP2 <a href="https://georgetown.instructure.com/files/2231349/download?download_frd=1">25.3–25.9</a></td>
+                                    <td></td>
+                                </tr>
+                                <tr id="1006000">
+                                    <td>F</td>
+                                    <td>4/12</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>P3: Progress update, including lit review, due</td>
+                                </tr>
+                                <tr id="1412">
+                                    <td>M</td>
+                                    <td>4/15</td>
+                                    <td>25</td>
+                                    <td>Statistical machine translation II</td>
+                                    <td></td>
+                                    <td>A5 due</td>
+                                </tr>
+
+                                <tr id="1441">
+                                    <td>W</td>
+                                    <td>4/17</td>
+                                    <td>26</td>
+                                    <td>Neural sequence-to-sequence models (Austin)</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr id="223" class="active">
+                                    <td>M</td>
+                                    <td>4/18-22</td>
+                                    <td colspan="2"><i>No class or office hours: Easter Break</i></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr id="1470" class="success">
+                                    <td>W</td>
+                                    <td>4/24</td>
+                                    <td>27</td>
+                                    <td>PROJECT POSTER SESSION (<b>Poulton 230</b>)</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr id="14700">
+                                    <td>M</td>
+                                    <td>4/29</td>
+                                    <td>28</td>
+                                    <td><a href="23_context.pdf">Context in language processing</a> + <a href="24_wrapup.pdf">Wrap-up</a></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr id="14120">
+                                    <td>Tu</td>
+                                    <td>5/1</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>P4: <a href="project.html">PROJECTS</a> DUE @ 11:59pm</td>
+                                </tr>
+
+                                <tr id="1528" class="success">
+                                    <td>Th</td>
+                                    <td>5/9</td>
+                                    <td></td>
+                                    <td>4:00-6:00pm: FINAL EXAM, room TBA</td>
+                                    <td><a href="final-review.html">Study guide</a></td>
+                                    <td></td>
+                                </tr>
+                                <tr><th colspan="6" style="text-align: center;">
+                                  Visit the <a href="http://gucl.georgetown.edu">GUCL website</a>
+                                  for NLP talks this semester and beyond!
+                                </th></tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                    <div class="col-xs-0 col-sm-1"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

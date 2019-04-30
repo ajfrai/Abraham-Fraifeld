@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8" />
+      <title>midterm-review</title>
+      <style>.markdown-preview:not([data-use-github-style]) { padding: 2em; font-size: 1.2em; color: rgb(171, 178, 191); background-color: rgb(40, 44, 52); overflow: auto; }
+.markdown-preview:not([data-use-github-style]) > :first-child { margin-top: 0px; }
+.markdown-preview:not([data-use-github-style]) h1, .markdown-preview:not([data-use-github-style]) h2, .markdown-preview:not([data-use-github-style]) h3, .markdown-preview:not([data-use-github-style]) h4, .markdown-preview:not([data-use-github-style]) h5, .markdown-preview:not([data-use-github-style]) h6 { line-height: 1.2; margin-top: 1.5em; margin-bottom: 0.5em; color: rgb(255, 255, 255); }
+.markdown-preview:not([data-use-github-style]) h1 { font-size: 2.4em; font-weight: 300; }
+.markdown-preview:not([data-use-github-style]) h2 { font-size: 1.8em; font-weight: 400; }
+.markdown-preview:not([data-use-github-style]) h3 { font-size: 1.5em; font-weight: 500; }
+.markdown-preview:not([data-use-github-style]) h4 { font-size: 1.2em; font-weight: 600; }
+.markdown-preview:not([data-use-github-style]) h5 { font-size: 1.1em; font-weight: 600; }
+.markdown-preview:not([data-use-github-style]) h6 { font-size: 1em; font-weight: 600; }
+.markdown-preview:not([data-use-github-style]) strong { color: rgb(255, 255, 255); }
+.markdown-preview:not([data-use-github-style]) del { color: rgb(124, 135, 156); }
+.markdown-preview:not([data-use-github-style]) a, .markdown-preview:not([data-use-github-style]) a code { color: rgb(82, 139, 255); }
+.markdown-preview:not([data-use-github-style]) img { max-width: 100%; }
+.markdown-preview:not([data-use-github-style]) > p { margin-top: 0px; margin-bottom: 1.5em; }
+.markdown-preview:not([data-use-github-style]) > ul, .markdown-preview:not([data-use-github-style]) > ol { margin-bottom: 1.5em; }
+.markdown-preview:not([data-use-github-style]) blockquote { margin: 1.5em 0px; font-size: inherit; color: rgb(124, 135, 156); border-color: rgb(75, 83, 98); border-width: 4px; }
+.markdown-preview:not([data-use-github-style]) hr { margin: 3em 0px; border-top: 2px dashed rgb(75, 83, 98); background: none; }
+.markdown-preview:not([data-use-github-style]) table { margin: 1.5em 0px; }
+.markdown-preview:not([data-use-github-style]) th { color: rgb(255, 255, 255); }
+.markdown-preview:not([data-use-github-style]) th, .markdown-preview:not([data-use-github-style]) td { padding: 0.66em 1em; border: 1px solid rgb(75, 83, 98); }
+.markdown-preview:not([data-use-github-style]) code { color: rgb(255, 255, 255); background-color: rgb(58, 63, 75); }
+.markdown-preview:not([data-use-github-style]) pre.editor-colors { margin: 1.5em 0px; padding: 1em; font-size: 0.92em; border-radius: 3px; background-color: rgb(49, 54, 63); }
+.markdown-preview:not([data-use-github-style]) kbd { color: rgb(255, 255, 255); border-width: 1px 1px 2px; border-style: solid; border-color: rgb(75, 83, 98) rgb(75, 83, 98) rgb(62, 68, 81); border-image: initial; background-color: rgb(58, 63, 75); }
+.markdown-preview[data-use-github-style] { font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif; line-height: 1.6; word-wrap: break-word; padding: 30px; font-size: 16px; color: rgb(51, 51, 51); background-color: rgb(255, 255, 255); overflow: scroll; }
+.markdown-preview[data-use-github-style] > :first-child { margin-top: 0px !important; }
+.markdown-preview[data-use-github-style] > :last-child { margin-bottom: 0px !important; }
+.markdown-preview[data-use-github-style] a:not([href]) { color: inherit; text-decoration: none; }
+.markdown-preview[data-use-github-style] .absent { color: rgb(204, 0, 0); }
+.markdown-preview[data-use-github-style] .anchor { position: absolute; top: 0px; left: 0px; display: block; padding-right: 6px; padding-left: 30px; margin-left: -30px; }
+.markdown-preview[data-use-github-style] .anchor:focus { outline: none; }
+.markdown-preview[data-use-github-style] h1, .markdown-preview[data-use-github-style] h2, .markdown-preview[data-use-github-style] h3, .markdown-preview[data-use-github-style] h4, .markdown-preview[data-use-github-style] h5, .markdown-preview[data-use-github-style] h6 { position: relative; margin-top: 1em; margin-bottom: 16px; font-weight: bold; line-height: 1.4; }
+.markdown-preview[data-use-github-style] h1 .octicon-link, .markdown-preview[data-use-github-style] h2 .octicon-link, .markdown-preview[data-use-github-style] h3 .octicon-link, .markdown-preview[data-use-github-style] h4 .octicon-link, .markdown-preview[data-use-github-style] h5 .octicon-link, .markdown-preview[data-use-github-style] h6 .octicon-link { display: none; color: rgb(0, 0, 0); vertical-align: middle; }
+.markdown-preview[data-use-github-style] h1:hover .anchor, .markdown-preview[data-use-github-style] h2:hover .anchor, .markdown-preview[data-use-github-style] h3:hover .anchor, .markdown-preview[data-use-github-style] h4:hover .anchor, .markdown-preview[data-use-github-style] h5:hover .anchor, .markdown-preview[data-use-github-style] h6:hover .anchor { padding-left: 8px; margin-left: -30px; text-decoration: none; }
+.markdown-preview[data-use-github-style] h1:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h2:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h3:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h4:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h5:hover .anchor .octicon-link, .markdown-preview[data-use-github-style] h6:hover .anchor .octicon-link { display: inline-block; }
+.markdown-preview[data-use-github-style] h1 tt, .markdown-preview[data-use-github-style] h2 tt, .markdown-preview[data-use-github-style] h3 tt, .markdown-preview[data-use-github-style] h4 tt, .markdown-preview[data-use-github-style] h5 tt, .markdown-preview[data-use-github-style] h6 tt, .markdown-preview[data-use-github-style] h1 code, .markdown-preview[data-use-github-style] h2 code, .markdown-preview[data-use-github-style] h3 code, .markdown-preview[data-use-github-style] h4 code, .markdown-preview[data-use-github-style] h5 code, .markdown-preview[data-use-github-style] h6 code { font-size: inherit; }
+.markdown-preview[data-use-github-style] h1 { padding-bottom: 0.3em; font-size: 2.25em; line-height: 1.2; border-bottom: 1px solid rgb(238, 238, 238); }
+.markdown-preview[data-use-github-style] h1 .anchor { line-height: 1; }
+.markdown-preview[data-use-github-style] h2 { padding-bottom: 0.3em; font-size: 1.75em; line-height: 1.225; border-bottom: 1px solid rgb(238, 238, 238); }
+.markdown-preview[data-use-github-style] h2 .anchor { line-height: 1; }
+.markdown-preview[data-use-github-style] h3 { font-size: 1.5em; line-height: 1.43; }
+.markdown-preview[data-use-github-style] h3 .anchor { line-height: 1.2; }
+.markdown-preview[data-use-github-style] h4 { font-size: 1.25em; }
+.markdown-preview[data-use-github-style] h4 .anchor { line-height: 1.2; }
+.markdown-preview[data-use-github-style] h5 { font-size: 1em; }
+.markdown-preview[data-use-github-style] h5 .anchor { line-height: 1.1; }
+.markdown-preview[data-use-github-style] h6 { font-size: 1em; color: rgb(119, 119, 119); }
+.markdown-preview[data-use-github-style] h6 .anchor { line-height: 1.1; }
+.markdown-preview[data-use-github-style] p, .markdown-preview[data-use-github-style] blockquote, .markdown-preview[data-use-github-style] ul, .markdown-preview[data-use-github-style] ol, .markdown-preview[data-use-github-style] dl, .markdown-preview[data-use-github-style] table, .markdown-preview[data-use-github-style] pre { margin-top: 0px; margin-bottom: 16px; }
+.markdown-preview[data-use-github-style] hr { height: 4px; padding: 0px; margin: 16px 0px; background-color: rgb(231, 231, 231); border: 0px none; }
+.markdown-preview[data-use-github-style] ul, .markdown-preview[data-use-github-style] ol { padding-left: 2em; }
+.markdown-preview[data-use-github-style] ul.no-list, .markdown-preview[data-use-github-style] ol.no-list { padding: 0px; list-style-type: none; }
+.markdown-preview[data-use-github-style] ul ul, .markdown-preview[data-use-github-style] ul ol, .markdown-preview[data-use-github-style] ol ol, .markdown-preview[data-use-github-style] ol ul { margin-top: 0px; margin-bottom: 0px; }
+.markdown-preview[data-use-github-style] li > p { margin-top: 16px; }
+.markdown-preview[data-use-github-style] dl { padding: 0px; }
+.markdown-preview[data-use-github-style] dl dt { padding: 0px; margin-top: 16px; font-size: 1em; font-style: italic; font-weight: bold; }
+.markdown-preview[data-use-github-style] dl dd { padding: 0px 16px; margin-bottom: 16px; }
+.markdown-preview[data-use-github-style] blockquote { padding: 0px 15px; color: rgb(119, 119, 119); border-left: 4px solid rgb(221, 221, 221); }
+.markdown-preview[data-use-github-style] blockquote > :first-child { margin-top: 0px; }
+.markdown-preview[data-use-github-style] blockquote > :last-child { margin-bottom: 0px; }
+.markdown-preview[data-use-github-style] table { display: block; width: 100%; overflow: auto; word-break: keep-all; }
+.markdown-preview[data-use-github-style] table th { font-weight: bold; }
+.markdown-preview[data-use-github-style] table th, .markdown-preview[data-use-github-style] table td { padding: 6px 13px; border: 1px solid rgb(221, 221, 221); }
+.markdown-preview[data-use-github-style] table tr { background-color: rgb(255, 255, 255); border-top: 1px solid rgb(204, 204, 204); }
+.markdown-preview[data-use-github-style] table tr:nth-child(2n) { background-color: rgb(248, 248, 248); }
+.markdown-preview[data-use-github-style] img { max-width: 100%; box-sizing: border-box; }
+.markdown-preview[data-use-github-style] .emoji { max-width: none; }
+.markdown-preview[data-use-github-style] span.frame { display: block; overflow: hidden; }
+.markdown-preview[data-use-github-style] span.frame > span { display: block; float: left; width: auto; padding: 7px; margin: 13px 0px 0px; overflow: hidden; border: 1px solid rgb(221, 221, 221); }
+.markdown-preview[data-use-github-style] span.frame span img { display: block; float: left; }
+.markdown-preview[data-use-github-style] span.frame span span { display: block; padding: 5px 0px 0px; clear: both; color: rgb(51, 51, 51); }
+.markdown-preview[data-use-github-style] span.align-center { display: block; overflow: hidden; clear: both; }
+.markdown-preview[data-use-github-style] span.align-center > span { display: block; margin: 13px auto 0px; overflow: hidden; text-align: center; }
+.markdown-preview[data-use-github-style] span.align-center span img { margin: 0px auto; text-align: center; }
+.markdown-preview[data-use-github-style] span.align-right { display: block; overflow: hidden; clear: both; }
+.markdown-preview[data-use-github-style] span.align-right > span { display: block; margin: 13px 0px 0px; overflow: hidden; text-align: right; }
+.markdown-preview[data-use-github-style] span.align-right span img { margin: 0px; text-align: right; }
+.markdown-preview[data-use-github-style] span.float-left { display: block; float: left; margin-right: 13px; overflow: hidden; }
+.markdown-preview[data-use-github-style] span.float-left span { margin: 13px 0px 0px; }
+.markdown-preview[data-use-github-style] span.float-right { display: block; float: right; margin-left: 13px; overflow: hidden; }
+.markdown-preview[data-use-github-style] span.float-right > span { display: block; margin: 13px auto 0px; overflow: hidden; text-align: right; }
+.markdown-preview[data-use-github-style] code, .markdown-preview[data-use-github-style] tt { padding: 0.2em 0px; margin: 0px; font-size: 85%; background-color: rgba(0, 0, 0, 0.04); border-radius: 3px; }
+.markdown-preview[data-use-github-style] code::before, .markdown-preview[data-use-github-style] tt::before, .markdown-preview[data-use-github-style] code::after, .markdown-preview[data-use-github-style] tt::after { letter-spacing: -0.2em; content: " "; }
+.markdown-preview[data-use-github-style] code br, .markdown-preview[data-use-github-style] tt br { display: none; }
+.markdown-preview[data-use-github-style] del code { text-decoration: inherit; }
+.markdown-preview[data-use-github-style] pre > code { padding: 0px; margin: 0px; font-size: 100%; word-break: normal; white-space: pre; background: transparent; border: 0px; }
+.markdown-preview[data-use-github-style] .highlight { margin-bottom: 16px; }
+.markdown-preview[data-use-github-style] .highlight pre, .markdown-preview[data-use-github-style] pre { padding: 16px; overflow: auto; font-size: 85%; line-height: 1.45; background-color: rgb(247, 247, 247); border-radius: 3px; }
+.markdown-preview[data-use-github-style] .highlight pre { margin-bottom: 0px; word-break: normal; }
+.markdown-preview[data-use-github-style] pre { word-wrap: normal; }
+.markdown-preview[data-use-github-style] pre code, .markdown-preview[data-use-github-style] pre tt { display: inline; max-width: initial; padding: 0px; margin: 0px; overflow: initial; line-height: inherit; word-wrap: normal; background-color: transparent; border: 0px; }
+.markdown-preview[data-use-github-style] pre code::before, .markdown-preview[data-use-github-style] pre tt::before, .markdown-preview[data-use-github-style] pre code::after, .markdown-preview[data-use-github-style] pre tt::after { content: normal; }
+.markdown-preview[data-use-github-style] kbd { display: inline-block; padding: 3px 5px; font-size: 11px; line-height: 10px; color: rgb(85, 85, 85); vertical-align: middle; background-color: rgb(252, 252, 252); border-width: 1px; border-style: solid; border-color: rgb(204, 204, 204) rgb(204, 204, 204) rgb(187, 187, 187); border-image: initial; border-radius: 3px; box-shadow: rgb(187, 187, 187) 0px -1px 0px inset; }
+.markdown-preview[data-use-github-style] a { color: rgb(51, 122, 183); }
+.markdown-preview[data-use-github-style] code { color: inherit; }
+.markdown-preview[data-use-github-style] pre.editor-colors { padding: 0.8em 1em; margin-bottom: 1em; font-size: 0.85em; border-radius: 4px; overflow: auto; }
+.markdown-preview pre.editor-colors { user-select: auto; }
+.scrollbars-visible-always .markdown-preview pre.editor-colors .vertical-scrollbar, .scrollbars-visible-always .markdown-preview pre.editor-colors .horizontal-scrollbar { visibility: hidden; }
+.scrollbars-visible-always .markdown-preview pre.editor-colors:hover .vertical-scrollbar, .scrollbars-visible-always .markdown-preview pre.editor-colors:hover .horizontal-scrollbar { visibility: visible; }
+.markdown-preview .task-list-item-checkbox { position: absolute; margin: 0.25em 0px 0px -1.4em; }
+.markdown-preview ul label { vertical-align: top; }
+.bracket-matcher .region {
+  border-bottom: 1px dotted lime;
+  position: absolute;
+}
+.line-number.bracket-matcher.bracket-matcher {
+  color: #abb2bf;
+  background-color: #2c313a;
+}
+
+.conflict-resolved {
+  background: #31363f;
+}
+.conflict-ours {
+  background: rgba(0, 136, 255, 0.4);
+}
+.conflict-ours.cursor-line {
+  background: rgba(0, 136, 255, 0.3);
+}
+.conflict-theirs {
+  background: rgba(32, 182, 132, 0.4);
+}
+.conflict-theirs.cursor-line {
+  background: rgba(32, 182, 132, 0.3);
+}
+.conflict-base {
+  background: rgba(204, 133, 51, 0.4);
+}
+.conflict-base.cursor-line {
+  background: rgba(204, 133, 51, 0.3);
+}
+.conflict-dirty {
+  background: rgba(235, 221, 91, 0.4);
+}
+.conflict-dirty.cursor-line {
+  background: rgba(235, 221, 91, 0.3);
+}
+
+.spell-check-misspelling .region {
+  border-bottom: 2px dotted rgba(255, 51, 51, 0.75);
+}
+.spell-check-corrections {
+  width: 25em !important;
+}
+
+pre.editor-colors .gutter .line-number {
+  /* Use CSS specificity to force errors to override warnings and info markers */
+  /* Use CSS specificity to force warnings to override info markes. */
+}
+pre.editor-colors .gutter .line-number.latex-error,
+pre.editor-colors .gutter .line-number.latex-error.latex-warning,
+pre.editor-colors .gutter .line-number.latex-error.latex-info,
+pre.editor-colors .gutter .line-number.latex-error.latex-warning.latex-info {
+  border-left: 2px solid #d13b2e;
+  padding-left: calc(0.5em - 2px);
+}
+pre.editor-colors .gutter .line-number.latex-warning,
+pre.editor-colors .gutter .line-number.latex-warning.latex-info {
+  border-left: 2px solid #ad7c0b;
+  padding-left: calc(0.5em - 2px);
+}
+pre.editor-colors .gutter .line-number.latex-info {
+  border-left: 2px solid #0f82e6;
+  padding-left: calc(0.5em - 2px);
+}
+
+@import 'languages/css';
+pre.editor-colors {
+  background-color: #282c34;
+  color: #abb2bf;
+}
+pre.editor-colors .line.cursor-line {
+  background-color: rgba(153, 187, 255, 0.04);
+}
+pre.editor-colors .invisible {
+  color: #abb2bf;
+}
+pre.editor-colors .cursor {
+  border-left: 2px solid #528bff;
+}
+pre.editor-colors .selection .region {
+  background-color: #3e4451;
+}
+pre.editor-colors .bracket-matcher .region {
+  border-bottom: 1px solid #528bff;
+  box-sizing: border-box;
+}
+pre.editor-colors .invisible-character {
+  color: rgba(171, 178, 191, 0.15);
+}
+pre.editor-colors .indent-guide {
+  color: rgba(171, 178, 191, 0.15);
+}
+pre.editor-colors .wrap-guide {
+  background-color: rgba(171, 178, 191, 0.15);
+}
+pre.editor-colors .gutter .line-number {
+  color: #636d83;
+  -webkit-font-smoothing: antialiased;
+}
+pre.editor-colors .gutter .line-number.cursor-line {
+  color: #abb2bf;
+  background-color: #2c313a;
+}
+pre.editor-colors .gutter .line-number.cursor-line-no-selection {
+  background-color: transparent;
+}
+pre.editor-colors .gutter .line-number .icon-right {
+  color: #abb2bf;
+}
+pre.editor-colors .gutter:not(.git-diff-icon) .line-number.git-line-removed.git-line-removed::before {
+  bottom: -3px;
+}
+pre.editor-colors .gutter:not(.git-diff-icon) .line-number.git-line-removed::after {
+  content: "";
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  width: 25px;
+  border-bottom: 1px dotted rgba(224, 82, 82, 0.5);
+  pointer-events: none;
+}
+pre.editor-colors .gutter .line-number.folded,
+pre.editor-colors .gutter .line-number:after,
+pre.editor-colors .fold-marker:after {
+  color: #abb2bf;
+}
+.syntax--comment {
+  color: #5c6370;
+  font-style: italic;
+}
+.syntax--entity.syntax--name.syntax--type {
+  color: #ffb366;
+}
+.syntax--entity.syntax--other.syntax--inherited-class {
+  color: #c3a1f2;
+}
+.syntax--keyword {
+  color: #ff66a8;
+}
+.syntax--keyword.syntax--control {
+  color: #ff66a8;
+}
+.syntax--keyword.syntax--operator {
+  color: #abb2bf;
+}
+.syntax--keyword.syntax--other.syntax--special-method {
+  color: #61afef;
+}
+.syntax--keyword.syntax--other.syntax--unit {
+  color: #ffb366;
+}
+.syntax--storage {
+  color: #ff66a8;
+}
+.syntax--storage.syntax--type.syntax--annotation,
+.syntax--storage.syntax--type.syntax--primitive {
+  color: #ff66a8;
+}
+.syntax--storage.syntax--modifier.syntax--package,
+.syntax--storage.syntax--modifier.syntax--import {
+  color: #abb2bf;
+}
+.syntax--constant {
+  color: #ffb366;
+}
+.syntax--constant.syntax--variable {
+  color: #ffb366;
+}
+.syntax--constant.syntax--character.syntax--escape {
+  color: #98c379;
+}
+.syntax--constant.syntax--numeric {
+  color: #ffb366;
+}
+.syntax--constant.syntax--other.syntax--color {
+  color: #98c379;
+}
+.syntax--constant.syntax--other.syntax--symbol {
+  color: #98c379;
+}
+.syntax--variable {
+  color: #ff66a8;
+}
+.syntax--variable.syntax--interpolation {
+  color: #be5046;
+}
+.syntax--variable.syntax--parameter {
+  color: #abb2bf;
+}
+.syntax--string {
+  color: #c3a1f2;
+}
+.syntax--string.syntax--regexp {
+  color: #98c379;
+}
+.syntax--string.syntax--regexp .syntax--source.syntax--ruby.syntax--embedded {
+  color: #ffb366;
+}
+.syntax--string.syntax--other.syntax--link {
+  color: #ff66a8;
+}
+.syntax--punctuation.syntax--definition.syntax--comment {
+  color: #5c6370;
+}
+.syntax--punctuation.syntax--definition.syntax--method-parameters,
+.syntax--punctuation.syntax--definition.syntax--function-parameters,
+.syntax--punctuation.syntax--definition.syntax--parameters,
+.syntax--punctuation.syntax--definition.syntax--separator,
+.syntax--punctuation.syntax--definition.syntax--seperator,
+.syntax--punctuation.syntax--definition.syntax--array {
+  color: #abb2bf;
+}
+.syntax--punctuation.syntax--definition.syntax--heading,
+.syntax--punctuation.syntax--definition.syntax--identity {
+  color: #61afef;
+}
+.syntax--punctuation.syntax--definition.syntax--bold {
+  color: #ffb366;
+  font-weight: bold;
+}
+.syntax--punctuation.syntax--definition.syntax--italic {
+  color: #ff66a8;
+  font-style: italic;
+}
+.syntax--punctuation.syntax--section.syntax--embedded {
+  color: #be5046;
+}
+.syntax--punctuation.syntax--section.syntax--method,
+.syntax--punctuation.syntax--section.syntax--class,
+.syntax--punctuation.syntax--section.syntax--inner-class {
+  color: #abb2bf;
+}
+.syntax--support.syntax--class {
+  color: #ffb366;
+}
+.syntax--support.syntax--type {
+  color: #98c379;
+}
+.syntax--support.syntax--function {
+  color: #98c379;
+}
+.syntax--support.syntax--function.syntax--any-method {
+  color: #61afef;
+}
+.syntax--entity.syntax--name.syntax--function {
+  color: #61afef;
+}
+.syntax--entity.syntax--name.syntax--class,
+.syntax--entity.syntax--name.syntax--type.syntax--class {
+  color: #ffb366;
+}
+.syntax--entity.syntax--name.syntax--section {
+  color: #61afef;
+}
+.syntax--entity.syntax--name.syntax--tag {
+  color: #ff66a8;
+}
+.syntax--entity.syntax--other.syntax--attribute-name {
+  color: #ffb366;
+}
+.syntax--entity.syntax--other.syntax--attribute-name.syntax--id {
+  color: #61afef;
+}
+.syntax--meta.syntax--class {
+  color: #ffb366;
+}
+.syntax--meta.syntax--class.syntax--body {
+  color: #abb2bf;
+}
+.syntax--meta.syntax--method-call,
+.syntax--meta.syntax--method {
+  color: #abb2bf;
+}
+.syntax--meta.syntax--definition.syntax--variable {
+  color: #ff66a8;
+}
+.syntax--meta.syntax--link {
+  color: #ffb366;
+}
+.syntax--meta.syntax--require {
+  color: #61afef;
+}
+.syntax--meta.syntax--selector {
+  color: #ff66a8;
+}
+.syntax--meta.syntax--separator {
+  background-color: #373b41;
+  color: #abb2bf;
+}
+.syntax--meta.syntax--tag {
+  color: #abb2bf;
+}
+.syntax--none {
+  color: #abb2bf;
+}
+.syntax--invalid.syntax--deprecated {
+  color: #523d14 !important;
+  background-color: #e0c285 !important;
+}
+.syntax--invalid.syntax--illegal {
+  color: white !important;
+  background-color: #e05252 !important;
+}
+.syntax--markup.syntax--bold {
+  color: #ffb366;
+  font-weight: bold;
+}
+.syntax--markup.syntax--changed {
+  color: #ff66a8;
+}
+.syntax--markup.syntax--deleted {
+  color: #ff66a8;
+}
+.syntax--markup.syntax--italic {
+  color: #ff66a8;
+  font-style: italic;
+}
+.syntax--markup.syntax--heading {
+  color: #ff66a8;
+}
+.syntax--markup.syntax--heading .syntax--punctuation.syntax--definition.syntax--heading {
+  color: #61afef;
+}
+.syntax--markup.syntax--link {
+  color: #ff66a8;
+}
+.syntax--markup.syntax--inserted {
+  color: #c3a1f2;
+}
+.syntax--markup.syntax--quote {
+  color: #ffb366;
+}
+.syntax--markup.syntax--raw {
+  color: #c3a1f2;
+}
+.syntax--source.syntax--cs .syntax--keyword.syntax--operator {
+  color: #ff66a8;
+}
+.syntax--source.syntax--gfm .syntax--markup {
+  -webkit-font-smoothing: auto;
+}
+.syntax--source.syntax--gfm .syntax--link .syntax--entity {
+  color: #61afef;
+}
+.syntax--source.syntax--ini .syntax--keyword.syntax--other.syntax--definition.syntax--ini {
+  color: #ff66a8;
+}
+.syntax--source.syntax--java .syntax--storage.syntax--modifier.syntax--import {
+  color: #ffb366;
+}
+.syntax--source.syntax--java .syntax--storage.syntax--type {
+  color: #ffb366;
+}
+.syntax--source.syntax--java-properties .syntax--meta.syntax--key-pair {
+  color: #ff66a8;
+}
+.syntax--source.syntax--java-properties .syntax--meta.syntax--key-pair > .syntax--punctuation {
+  color: #abb2bf;
+}
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--dictionary.syntax--json > .syntax--string.syntax--quoted.syntax--json {
+  color: #ff66a8;
+}
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--dictionary.syntax--json > .syntax--string.syntax--quoted.syntax--json > .syntax--punctuation.syntax--string {
+  color: #ff66a8;
+}
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--dictionary.syntax--json > .syntax--value.syntax--json > .syntax--string.syntax--quoted.syntax--json,
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--array.syntax--json > .syntax--value.syntax--json > .syntax--string.syntax--quoted.syntax--json,
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--dictionary.syntax--json > .syntax--value.syntax--json > .syntax--string.syntax--quoted.syntax--json > .syntax--punctuation,
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--array.syntax--json > .syntax--value.syntax--json > .syntax--string.syntax--quoted.syntax--json > .syntax--punctuation {
+  color: #c3a1f2;
+}
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--dictionary.syntax--json > .syntax--constant.syntax--language.syntax--json,
+.syntax--source.syntax--json .syntax--meta.syntax--structure.syntax--array.syntax--json > .syntax--constant.syntax--language.syntax--json {
+  color: #98c379;
+}
+.syntax--source.syntax--ruby .syntax--constant.syntax--other.syntax--symbol > .syntax--punctuation {
+  color: inherit;
+}
+.syntax--source.syntax--python .syntax--keyword.syntax--operator.syntax--logical.syntax--python {
+  color: #ff66a8;
+}
+.syntax--source.syntax--python .syntax--variable {
+  color: #ffb366;
+  font-style: italic;
+}
+.syntax--source.syntax--python .syntax--variable.syntax--parameter {
+  color: #ffb366;
+  font-style: normal;
+}
+</style>
+  </head>
+  <body class='markdown-preview' data-use-github-style><h1 id="midterm-exam-study-guide-enlp-spring-2019">Midterm Exam Study Guide | ENLP Spring 2019</h1>
+<p>This page provides a list of concepts you should be familiar with and questions you should be able to answer if you are thoroughly familiar with the material in the course. It is safe to assume that if you have a good grasp of everything listed here, you will do well on the exam. However, we cannot guarantee that only the topics mentioned here, and nothing else, will appear on the exam.</p>
+<h2 id="how-to-review">How to review</h2>
+<p>You should review the lecture slides, quizzes, and homework assignments. The readings should be helpful as well. If there are topics that you are not clear on from these resources, please ask on the discussion board, in office hours, or in the review session.</p>
+<h2 id="exam-procedures">Exam procedures</h2>
+<p>The exam will be completed without use of a laptop, calculator, or textbook/reference materials.</p>
+<h2 id="scope-of-the-midterm">Scope of the midterm</h2>
+<p>Everything in the course up to and including HMMs for part-of-speech tagging is fair game. We will not, however, test you on the operation of the Viterbi algorithm in the midterm.</p>
+<h2 id="generative-probabilistic-models">Generative probabilistic models</h2>
+<p>We have discussed the following generative probabilistic models:</p>
+<ul>
+<li>Naïve Bayes classifier</li>
+<li>N-gram Language Model</li>
+<li>Hidden Markov Model</li>
+</ul>
+<p>For each of these, you should be able to</p>
+<ul>
+<li>describe the imagined process by which data is generated, and say what independence assumptions are made (includes familiarity with terms like "Markov assumption” and “trigram model").</li>
+<li>write down the associated formula for the joint probability of hidden and observed variables (or just the observed variables if there are no hidden variables).</li>
+<li>compute the probability of (say) a tag-word sequence, document, or whatever the model describes (assuming you know the model parameters).</li>
+<li>for the naïve Bayes model, compute the most probable class for a particular input, hand-simulating any algorithms that might be needed (again assuming you know the model parameters).</li>
+<li>for the HMM, convert between a state transition diagram and transition table, and explain why a dynamic programming algorithm is needed for certain operations (decoding—Viterbi algorithm; marginalizing over tags—forward algorithm). You do not need to understand (for the midterm) how these algorithms work.</li>
+<li>explain how the model is trained.</li>
+<li>give examples of tasks the model could be applied to, and how it would be applied.</li>
+<li>say what the model can and cannot capture about natural language, ideally giving examples of its failure modes.</li>
+</ul>
+<h2 id="discriminative-classification-models">Discriminative classification models</h2>
+<p>We have covered:</p>
+<ul>
+<li>binary &amp; multiclass Perceptron</li>
+<li>SVM</li>
+<li>multiclass Logistic regression/MaxEnt</li>
+</ul>
+<p>For this model, you should be able to</p>
+<ul>
+<li>give examples of tasks the model could be applied to, and how it would apply (e.g., what features might be useful).</li>
+<li>explain at a high level what training the model aims to achieve, and how it differs from training a generative model.</li>
+<li>identify which models can be trained with early stopping, averaging, or regularization, and why these techniques are used.</li>
+<li>discuss the pros and cons of discriminative classifiers vs. Naïve Bayes.</li>
+<li>explain why optimization is required for learning, unlike with generative models.</li>
+<li>identify MaxEnt as probabilistic and the others as non-probabilistic. You should understand the formula for computing the conditional probability of the hidden class given the observations/features, and be able to apply that formula if you are given an example problem with features and weights. You do not need to memorize the formula.</li>
+<li>explain how naïve Bayes can be expressed as a linear classifier.</li>
+<li>write and explain the decoding (classification) rule for any linear classifier given a vector of weights and a feature function.</li>
+<li>walk through the Perceptron learning algorithm for an example.</li>
+<li>explain how, for the Perceptron, decoding is embedded as a step within learning.</li>
+</ul>
+<h2 id="other-formulas">Other formulas</h2>
+<p>In addition to the equations for the generative and discriminative models listed above, you should know the formulas for the following concepts, what they may be used for, and be able to apply them appropriately. Where relevant you should be able to discuss strengths and weaknesses of the associated method, and alternatives.</p>
+<ul>
+<li>Bayes' Rule (also: definition of Conditional Probability, law of Total Probability aka Sum Rule, Chain Rule, marginalization, and all other relevant formulas in the Basic Probability Theory reading)</li>
+<li>Noisy channel model</li>
+<li>Add-One / Add-Alpha Smoothing</li>
+<li>Dot product</li>
+<li>Precision, recall, and F1-score</li>
+</ul>
+<h2 id="additional-mathematical-and-computational-concepts">Additional Mathematical and Computational Concepts</h2>
+<p> Overarching concepts:</p>
+<ul>
+<li><p>Zipf's Law and sparse data: What is Zipf's law and what are its implications? What does "sparse data" refer to? Be able to discuss these with respect to specific tasks.</p>
+</li>
+<li><p>Probability estimation and smoothing: What are different methods for estimating probabilities from corpus data, and what are the pros and cons of each, and the characteristic errors? Under what circumstances might you find simpler methods acceptable, or unacceptable? You should be familiar at a high level at least with:</p>
+<ul>
+<li>Maximum Likelihood Estimation</li>
+<li>Add-One / Add-Alpha Smoothing</li>
+<li>Entropy and Cross-Entropy/Perplexity</li>
+</ul>
+<p>Except as noted under "Formulas" above, you do not need to memorize the formulas, but should understand the conceptual differences and motivation behind each method, and should be able to <em>use</em> the formulas if they are given to you.</p>
+</li>
+<li><p>Training, development, and test sets: How are these used and for what reason? Be able to explain their application to particular problems.</p>
+</li>
+<li><p>Cross-validation</p>
+</li>
+<li><p>The distinction between parameters and hyperparameters</p>
+</li>
+<li><p>The distinction between models and algorithms</p>
+</li>
+<li><p>Objective function: Classification objective, Learning objective/Loss function</p>
+</li>
+</ul>
+<h2 id="linguistic-and-representational-concepts">Linguistic and Representational Concepts</h2>
+<p>You should be able to explain each of these concepts, give one or two examples where appropriate, and be able to identify examples if given to you. You should be able to say what NLP tasks these are relevant to and why.</p>
+<ul>
+<li>Ambiguity (of many varieties, w.r.t. all tasks we've discussed)</li>
+<li>Part-of-Speech<ul>
+<li>especially, the terms: common noun, proper noun, pronoun, adjective, adverb, auxiliary, main verb, copula, preposition, conjunction, punctuation</li>
+<li>open-class vs. closed-class</li>
+</ul>
+</li>
+<li>Word Senses and relations between them (synonym, antonym, hypernym, hyponym, similarity; homonymy vs. polysemy)</li>
+<li>productivity, Wug Test</li>
+<li>Word order typology: SVO, VSO, etc.</li>
+<li>Dialect vs. language</li>
+<li>Phonetics, phonology, lexicon, morphology, syntax, semantics, pragmatics, orthography</li>
+<li>Synthetic vs. analytic language</li>
+<li>Inflectional vs. derivational morphology</li>
+<li>consonant, vowel, tone, syllable, prosody, stress</li>
+<li>morpheme, affix, prefix, suffix, compound</li>
+<li>International Phonetic Alphabet (what it is—not how to use it), Unicode</li>
+<li>Language families, e.g. Indo-European, Romance, Germanic, Slavic, Sino-Tibetan, Semitic</li>
+<li>Salient aspects of languages presented thus far (questions will be about groups of languages, so if you missed one or two presentations that shouldn’t put you at a disadvantage)</li>
+</ul>
+<p>Also, you should be able to give an analysis of a phrase or sentence using the following formalisms. Assume that either the example will be very simple and/or some set of labels is provided for you to use. (i.e. you should know some standard categories for English but you don't need to memorize details of specific tagsets etc.)</p>
+<ul>
+<li>label parts of speech</li>
+<li>label word senses given dictionary definitions</li>
+<li>label named entities given a list of classes</li>
+<li>label the sentiment of a document as well as some positive and negative cue words</li>
+</ul>
+<h2 id="tasks">Tasks</h2>
+<p>You should be able to explain each of these tasks, give one or two examples where appropriate, and discuss cases of ambiguity or what makes the task difficult. In most cases you should be able to say what algorithm(s) or general method(s) can be used to solve the task, and what evaluation method(s) are typically used.</p>
+<ul>
+<li>Tokenization</li>
+<li>Spelling correction</li>
+<li>Language modeling</li>
+<li>PoS-tagging</li>
+<li>Text categorization</li>
+<li>Word sense disambiguation</li>
+<li>Named entity recognition</li>
+<li>Sentiment analysis</li>
+</ul>
+<h2 id="corpora-resources-and-evaluation">Corpora, Resources, and Evaluation</h2>
+<p>You should be able to describe what linguistic information is captured in each of the following resources, and how it might be used in an NLP system.</p>
+<ul>
+<li>Penn Treebank</li>
+<li>WordNet</li>
+</ul>
+<p>For each of the following evaluation measures, you should be able to explain what it measures, what tasks it would be appropriate for, and why.</p>
+<ul>
+<li>Cross-entropy/Perplexity</li>
+<li>Accuracy</li>
+<li>Precision, recall, and F1-score</li>
+</ul>
+<p>In addition:</p>
+<ul>
+<li>Intrinsic vs. extrinsic evaluation: be able to explain the difference and give examples of each for particular tasks.</li>
+<li>Gold standard: what is it and what is it used for?</li>
+<li>Confusion matrix: what is it and what is it used for?</li>
+</ul>
+<h2 id="text-processing">Text Processing</h2>
+<p>You should be able to write and interpret Python-style regular expressions with the following components:</p>
+<ul>
+<li>string delimiters: <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">^</code> <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">$</code></li>
+<li>optionality/repetition operators: <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">|</code> <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">?</code> <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">*</code> <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">+</code> <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">{3,5}</code></li>
+<li>the <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">.</code> operator (any character)</li>
+<li>character classes: e.g. <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">[xyz]</code>, <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">[^a-z0-9]</code> and the abbreviations <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">\w</code> <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">\W</code> <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">\s</code> <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">\S</code> <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">\d</code> <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">\D</code></li>
+<li>groups: e.g. <code style="font-family: Menlo, Consolas, &quot;DejaVu Sans Mono&quot;, monospace;">([a-z][0-9])+</code></li>
+<li>backslash-escaping for metacharacters</li>
+</ul>
+<p>You should be familiar with basic Python functionality, esp. involving strings and data structures of the types: list, tuple, dict, Counter.</p>
+<p>You will not be asked to write Python code from scratch, but you may be asked to choose which of several commands performs the desired function, for example.</p></body>
+</html>

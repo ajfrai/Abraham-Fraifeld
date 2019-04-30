@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!-- common.css -->
+  <style>* {-webkit-tap-highlight-color: rgba(0,0,0,0);}html {-webkit-text-size-adjust: none;}body {font-family: Arial, Helvetica, sans-serif;margin: 0;color: #333;word-wrap: break-word;}h1, h2, h3, h4, h5, h6 {line-height: 1.1;}img {max-width: 100% !important;}blockquote {margin: 0;padding: 0 15px;color: #777;border-left: 4px solid #ddd;}hr {background-color: #ddd;border: 0;height: 1px;margin: 15px 0;}code {font-family: Menlo, Consolas, 'Ubuntu Mono', Monaco, 'source-code-pro', monospace;line-height: 1.4;margin: 0;padding: 0.2em 0;font-size: 85%;background-color: rgba(0,0,0,0.04);border-radius: 3px;}pre > code {margin: 0;padding: 0;font-size: 100%;word-break: normal;background: transparent;border: 0;}ol {list-style-type: decimal;}ol ol, ul ol {list-style-type: lower-latin;}ol ol ol, ul ol ol, ul ul ol, ol ul ol {list-style-type: lower-roman;}table {border-spacing: 0;border-collapse: collapse;margin-top: 0;margin-bottom: 16px;}table th {font-weight: bold;}table th, table td {padding: 6px 13px;border: 1px solid #ddd;}table tr {border-top: 1px solid #ccc;}table tr:nth-child(even) {background-color: #f8f8f8;}input[type="checkbox"] {cursor: default;margin-right: 0.5em;font-size: 13px;}.task-list-item {list-style-type: none;}.task-list-item+.task-list-item {margin-top: 3px;}.task-list-item input {float: left;margin: 0.3em 1em 0.25em -1.6em;vertical-align: middle;}#tag-field {margin: 8px 2px 10px;}#tag-field .tag {display: inline-block;background: #cadff3;border-radius: 4px;padding: 1px 8px;color: black;font-size: 12px;margin-right: 10px;line-height: 1.4;}</style>
+  <!-- ace-static.css -->
+  <style>.ace_static_highlight {white-space: pre-wrap;}.ace_static_highlight .ace_gutter {width: 2em;text-align: right;padding: 0 3px 0 0;margin-right: 3px;}.ace_static_highlight.ace_show_gutter > .ace_line {padding-left: 2.6em;}.ace_static_highlight .ace_line {position: relative;}.ace_static_highlight .ace_gutter-cell {-moz-user-select: -moz-none;-khtml-user-select: none;-webkit-user-select: none;user-select: none;top: 0;bottom: 0;left: 0;position: absolute;}.ace_static_highlight .ace_gutter-cell:before {content: counter(ace_line, decimal);counter-increment: ace_line;}.ace_static_highlight {counter-reset: ace_line;}</style>
+  <style>.ace-tomorrow-night-eighties .ace_gutter {background: #272727;color: #CCC}.ace-tomorrow-night-eighties .ace_print-margin {width: 1px;background: #272727}.ace-tomorrow-night-eighties {background-color: #2D2D2D;color: #CCCCCC}.ace-tomorrow-night-eighties .ace_constant.ace_other,.ace-tomorrow-night-eighties .ace_cursor {color: #CCCCCC}.ace-tomorrow-night-eighties .ace_marker-layer .ace_selection {background: #515151}.ace-tomorrow-night-eighties.ace_multiselect .ace_selection.ace_start {box-shadow: 0 0 3px 0px #2D2D2D;}.ace-tomorrow-night-eighties .ace_marker-layer .ace_step {background: rgb(102, 82, 0)}.ace-tomorrow-night-eighties .ace_marker-layer .ace_bracket {margin: -1px 0 0 -1px;border: 1px solid #6A6A6A}.ace-tomorrow-night-bright .ace_stack {background: rgb(66, 90, 44)}.ace-tomorrow-night-eighties .ace_marker-layer .ace_active-line {background: #393939}.ace-tomorrow-night-eighties .ace_gutter-active-line {background-color: #393939}.ace-tomorrow-night-eighties .ace_marker-layer .ace_selected-word {border: 1px solid #515151}.ace-tomorrow-night-eighties .ace_invisible {color: #6A6A6A}.ace-tomorrow-night-eighties .ace_keyword,.ace-tomorrow-night-eighties .ace_meta,.ace-tomorrow-night-eighties .ace_storage,.ace-tomorrow-night-eighties .ace_storage.ace_type,.ace-tomorrow-night-eighties .ace_support.ace_type {color: #CC99CC}.ace-tomorrow-night-eighties .ace_keyword.ace_operator {color: #66CCCC}.ace-tomorrow-night-eighties .ace_constant.ace_character,.ace-tomorrow-night-eighties .ace_constant.ace_language,.ace-tomorrow-night-eighties .ace_constant.ace_numeric,.ace-tomorrow-night-eighties .ace_keyword.ace_other.ace_unit,.ace-tomorrow-night-eighties .ace_support.ace_constant,.ace-tomorrow-night-eighties .ace_variable.ace_parameter {color: #F99157}.ace-tomorrow-night-eighties .ace_invalid {color: #CDCDCD;background-color: #F2777A}.ace-tomorrow-night-eighties .ace_invalid.ace_deprecated {color: #CDCDCD;background-color: #CC99CC}.ace-tomorrow-night-eighties .ace_fold {background-color: #6699CC;border-color: #CCCCCC}.ace-tomorrow-night-eighties .ace_entity.ace_name.ace_function,.ace-tomorrow-night-eighties .ace_support.ace_function,.ace-tomorrow-night-eighties .ace_variable {color: #6699CC}.ace-tomorrow-night-eighties .ace_support.ace_class,.ace-tomorrow-night-eighties .ace_support.ace_type {color: #FFCC66}.ace-tomorrow-night-eighties .ace_heading,.ace-tomorrow-night-eighties .ace_markup.ace_heading,.ace-tomorrow-night-eighties .ace_string {color: #99CC99}.ace-tomorrow-night-eighties .ace_comment {color: #999999}.ace-tomorrow-night-eighties .ace_entity.ace_name.ace_tag,.ace-tomorrow-night-eighties .ace_entity.ace_other.ace_attribute-name,.ace-tomorrow-night-eighties .ace_meta.ace_tag,.ace-tomorrow-night-eighties .ace_variable {color: #F2777A}.ace-tomorrow-night-eighties .ace_indent-guide {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWPQ09NrYAgMjP4PAAtGAwchHMyAAAAAAElFTkSuQmCC) right repeat-y}</style>
+  <!-- export.css -->
+  <style>
+    body{margin:0 auto;max-width:800px;line-height:1.4}
+    #nav{margin:5px 0 10px;font-size:15px}
+    #titlearea{border-bottom:1px solid #ccc;font-size:17px;padding:10px 0;}
+    #contentarea{font-size:15px;margin:16px 0}
+    .cell{outline:0;min-height:20px;margin:5px 0;padding:5px 0;}
+    .code-cell{font-family:Menlo,Consolas,'Ubuntu Mono',Monaco,'source-code-pro',monospace;font-size:12px;}
+    .latex-cell{white-space:pre-wrap;}
+  </style>
+  <!-- User CSS -->
+  <style> .text-cell {font-size: 14px;}.code-cell {font-size: 12px;}.markdown-cell {font-size: 14px;}.latex-cell {font-size: 14px;}</style>
+</head>
+<body>
+
+
+  <div id="contentarea"><div class="cell markdown-cell"><h1 id="python-notes-accompanying-enlp-lecture-2">Python Notes Accompanying ENLP Lecture 2</h1>
+<blockquote>
+<p>Nathan Schneider<br>7 September 2016; updated 18 January 2018</p>
+</blockquote>
+<p>Some notes on Python 3, strings, regular expressions, doctests, and Jupyter.</p>
+<p>For details, see sections 3.2–3.10 of <a href="http://www.nltk.org/book/ch03.html"><em>Natural Language Processing with Python</em>, Ch. 3: Processing Raw Text</a>.</p>
+<h2 id="for-python-2-users-what-s-new-in-3-">For Python 2 users: What's new in 3?</h2>
+<p>The most important things are:</p>
+<ol>
+<li>Strings and Unicode work differently. See below.</li><li><code>print</code> is now a function! Parentheses mandatory.<ul>
+<li>Instead of the <code>&gt;&gt;</code> thing, there is the <code>file=</code> keyword argument.</li></ul>
+</li><li>The division operator <code>/</code> <em>always</em> returns a float. This is probably what you meant.<ul>
+<li>Use <code>//</code> if you want integer division that throws out the remainder.</li></ul>
+</li><li>In 2.x, <code>range()</code>, <code>enumerate()</code>, <code>map()</code>,  <code>filter()</code>, and <code>zip()</code> return a list. In 3.x, they return a lazy object for memory-efficient iteration. <ul>
+<li>Same: <code>dict.items()</code>, <code>dict.keys()</code>, <code>dict.values()</code></li><li>This is because you probably only need one element at a time. Wrap with <code>list()</code> if you REALLY want a list.</li><li><code>xrange()</code> no longer exists in Python 3.</li></ul>
+</li></ol>
+<p>There is a snazzy script called <code>2to3</code> that will help you convert your <code>2.x</code> code into <code>3.x</code>. From now on, when you must write <code>2.x</code> code, always good practice to use <code>from __future__ import print_function, division</code> (but this won't address all differences).</p>
+<h2 id="strings">Strings</h2>
+<ul>
+<li>A string is a sequence of characters.</li><li>String literal in quotes (single or double): <code>"Bob's favorite restaurant"</code> or <code>'My "favorite" restaurant'</code></li><li>Backslash-escapes: <code>'Bob\'s favorite restaurant'</code>, <code>"My \"favorite\" restaurant"</code></li><li>Whitespace: typically we encounter the space (<code>' '</code>), tab (<code>'\t'</code>), newline (<code>'\n'</code> on Unix/Mac, <code>'\r\n'</code> on Windows)</li><li>Raw strings: backslash is actually a backslash (it only acts as an escape for the quote delimiter)<ul>
+<li>Mainly useful for regular expressions: <code>r'\w+\s' == '\\w+\\s'</code> </li></ul>
+</li><li>Triple-quoted strings<ul>
+<li>Can span multiple lines</li><li>Useful for code documentation ("docstring")</li></ul>
+</li></ul>
+<h2 id="what-can-you-do-with-strings-">What can you do with strings?</h2>
+<ul>
+<li>You can concatenate strings and index, slice, and iterate over characters just like elements of a list<ul>
+<li><code>'My' + ' ' + 'racoon' == 'My racoon'</code></li></ul>
+</li><li>Check substring containment like list containment: <code>'tri' in 'string' == True</code></li><li>Count substring occurrences: <code>.count()</code></li><li>Find substring position: <code>.index()</code> and <code>.find()</code><ul>
+<li><code>.index()</code> raises an error if not found</li><li><code>.find()</code> returns <code>-1</code> if not found</li></ul>
+</li><li>Test whether a string has only certain kinds of characters: <code>.isupper()</code>, <code>.islower()</code>, <code>.isalpha()</code>, <code>.isalnum()</code>, <code>.isdigit()</code>, <code>.isspace()</code><ul>
+<li>Note: <code>.isupper()</code>: <code>True</code> if at least 1 uppercase character and no lowercase characters; <code>.islower()</code> is similar</li></ul>
+</li><li>String transformations: <code>.replace('old', 'new')</code>, <code>.upper()</code>, <code>.lower()</code>, <code>.split()</code>, <code>.splitlines()</code>, <code>delimiter.join(parts)</code>, <code>.strip()</code><ul>
+<li>Strings are <em>immutable</em>: an instance of a string cannot be modified. Methods like <code>.replace()</code> return a <em>new</em> string; the original remains in memory.</li><li>With no arguments, <code>.split()</code> splits on whitespace-sequences. Or you can specify a separator string, e.g., <code>.split('\t')</code> to split only on tabs.</li><li><code>.join()</code> is the reverse of <code>.split()</code>: it CREATES a single string out of a sequence (e.g., a list) of component strings. Usually called on a string literal. The sequence is given as the argument:<ul>
+<li><code>' '.join(['My', 'racoon', 'has', 'hepatitis'])</code> gives <code>'My racoon has hepatitis'</code></li><li><code>''.join(['My', 'racoon', 'has', 'hepatitis'])</code> gives <code>'Myracoonhashepatitis'</code></li></ul>
+</li><li><code>.strip()</code> removes all whitespace at the beginning and end of the string.</li></ul>
+</li><li>Convert to/from a number: <code>str(12)=='12' and int('12')==12</code></li></ul>
+<h2 id="strings-in-python-3">Strings in Python 3</h2>
+<ul>
+<li>Two kinds: <code>str</code> for text, <code>bytes</code> for encoded text<ul>
+<li>In a <code>str</code>, each element is a <em>character</em>, whether ASCII (appears on a standard U.S. keyboard) or not.<ul>
+<li>The string 'é£' consists of 2 non-ASCII characters.</li></ul>
+</li><li><code>bytes</code> literals are prefixed with <code>b</code>. Each element is a byte.<ul>
+<li>A byte-string is said to be <em>encoded</em> because its interpretation as text-characters depends on an encoding.</li></ul>
+</li><li>You should avoid working with bytes unless absolutely necessary</li></ul>
+</li><li>Converting between <code>str</code> and <code>bytes</code> requires an <em>encoding</em><ul>
+<li>Usually, we assume <code>utf-8</code> (a Unicode encoding). Unicode assigns a number ("code point") to pretty much any character you can imagine; UTF-8 is a way of converting code points into bytes.<ul>
+<li><code>bytes('é£', 'utf-8')==b'\xc3\xa9\xc2\xa3'</code></li><li><code>str(b'\xc3\xa9\xc2\xa3', 'utf-8')=='é£'</code></li></ul>
+</li><li>Mainly this comes up with <em>files</em>, which are stored as bytes.</li><li>To read from or write to a file, the encoding determines how the bytes are read as characters: e.g. <code>open('myfile.txt', 'r', 'utf-8')</code> to open a file for reading with the UTF-8 encoding.
+  <ul><li>UTF-8 is probably the default encoding for your Python 3 installation.
+    To verify, open the interactive Python prompt and type: <code>import locale; locale.getpreferredencoding(False)</code></li>
+    <li><code>'r'</code> is the default mode for opening a file, so if your system default encoding is UTF-8,
+      <code>open('myfile.txt', 'r', 'utf-8')</code> can be simplifed to <code>open('myfile.txt')</code>.</li>
+    </ul>
+  </li></ul>
+</li></ul>
+<h2 id="regular-expressions">Regular Expressions</h2>
+<p>As noted above, it is recommended to use raw strings for regex pattern literals.</p>
+<p>See the NLTK Book reading for the basics of regular expressions, including:</p>
+<ul>
+<li>The operators <code>.</code>, <code>?</code>, <code>*</code>, <code>+</code>, and repetition ranges like <code>{4,6}</code></li><li>Disjunctions: <code>a|b</code></li><li>Capturing groups: <code>(.*)(..)</code></li><li>Character classes like <code>[aeiou]</code>, <code>[^A-Za-z]</code>, <code>\d</code>, <code>\w</code>,  <code>\b</code>, <code>\s</code> and their complements (<code>\S</code> etc.)</li><li>Indicating the start and end of the string</li><li>How to use the <a href="https://docs.python.org/3/library/re.html"><code>re</code></a> module: <code>.compile()</code>, <code>.search()</code>, <code>.match()</code>, <code>.split()</code>, <code>.sub()</code>, <code>.finditer()</code>. Checking whether a string matches or not, and if it does, getting the full match as well as matched groups.</li></ul>
+<h2 id="doctests">Doctests</h2>
+<p>With the <a href="https://docs.python.org/3/library/doctest.html"><code>doctest</code></a> module, you can write test cases inside function docstrings by writing <code>&gt;&gt;&gt;</code> followed by an input and expected output:</p>
+<pre><div class="ace-tomorrow-night-eighties"><div class="ace_static_highlight" style="counter-reset:ace_line 0"><div class="ace_line"><span class="ace_keyword">def</span> <span class="ace_identifier">fun</span><span class="ace_paren ace_lparen">(</span><span class="ace_identifier">x</span><span class="ace_paren ace_rparen">)</span>:
+</div><div class="ace_line">    <span class="ace_string">"""Check whether the last character in `x` is capitalized</span>
+</div><div class="ace_line">
+</div><div class="ace_line"><span class="ace_string">    &gt;&gt;&gt; fun('sdfsdf2094jsldkfX')</span>
+</div><div class="ace_line"><span class="ace_string">    True</span>
+</div><div class="ace_line">
+</div><div class="ace_line"><span class="ace_string">    &gt;&gt;&gt; fun('sdfsdf2094jsldk')</span>
+</div><div class="ace_line"><span class="ace_string">    False</span>
+</div><div class="ace_line"><span class="ace_string">    """</span>
+</div><div class="ace_line">    <span class="ace_keyword">return</span> <span class="ace_identifier">x</span><span class="ace_paren ace_lparen">[</span><span class="ace_keyword ace_operator">-</span><span class="ace_constant ace_numeric">1</span><span class="ace_paren ace_rparen">]</span>.<span class="ace_identifier">isupper</span><span class="ace_paren ace_lparen">(</span><span class="ace_paren ace_rparen">)</span>
+</div></div></div></pre><p>Then run:</p>
+<pre><div class="ace-tomorrow-night-eighties"><div class="ace_static_highlight" style="counter-reset:ace_line 0"><div class="ace_line"><span class="ace_keyword">import</span> <span class="ace_identifier">doctest</span>
+</div><div class="ace_line"><span class="ace_identifier">doctest</span>.<span class="ace_identifier">testmod</span><span class="ace_paren ace_lparen">(</span><span class="ace_paren ace_rparen">)</span>
+</div></div></div></pre><p>to run the tests. (In general, the actual output must EXACTLY match the expected output, but see the module documentation for options allowing flexibility with whitespace etc.) If any of the tests fail, a warning message is printed. This is highly recommended because it doubles as human-readable documentation of your code's behavior.</p>
+<h2 id="jupyter">Jupyter</h2>
+<p><a href="https://jupyter.org">Jupyter</a>, formerly IPython Notebook, offers browser-based sessions with the interactive Python interpreter. Sessions can be saved for later. Each session is organized by <em>cells</em>, which generally contain an input (code) and output (the value of an expression, and anything that is printed). These code cells are run one at a time. You can also make cells with textual notes. IPython and Jupyter are included in the <a href="https://docs.continuum.io/anaconda/">Anaconda</a> distribution.</p>
+</div></div>
+  <script></script>
+</body>
+</html>
