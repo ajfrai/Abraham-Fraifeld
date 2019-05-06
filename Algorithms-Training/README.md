@@ -1,5 +1,6 @@
 # Abraham-Fraifeld
-## Description In this folder, I revisit some projects from undergrad and implement some algorithms from CLRS and others. This folder is less about progress and more about maintenance
+## Description 
+In this folder, I revisit some projects from undergrad and implement some algorithms from CLRS and others. This folder is less about progress and more about maintenance
 
 ## Completed Projects
 ### Linked List 
