@@ -1,0 +1,2 @@
+I used binwalk to extract the files from the recovered drive. 
+In particular, the command 'binwalk -D="jpeg" animals.dd' gave me a directory containing images. One of the images contained the flag. 
