@@ -11,10 +11,12 @@ import random
 
 ### INIT METHODS
 def read_board(file):
-    board = empty_board
+    board = empty_board()
     with open(file, "r") as f:
+        i = 0
         for line in f:
-            board.append(line.split())
+            board[i]=[int(x) for x in line.split()]
+            i = i + 1
     return board
 
 def empty_board():
