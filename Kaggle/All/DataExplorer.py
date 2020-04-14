@@ -6,6 +6,23 @@ Created on Sun Apr  5 12:07:26 2020
 @author: fraifeld-mba
 """
 
+"""
+New ToDO In Order
+
+1. Docstrings
+2. Correlation Heatmap
+3. Regression Lines on Scatterplot
+
+Debugging:
+    
+1. Want to make sure x and y are the same size at all times in the scatter function
+That is not enforced right now.
+
+Refactoring:
+
+1. Turn scatter plot into a non-custom data structure. Use dataframe throughout the pipeline
+"""
+
 import pandas as pd
 import os
 from matplotlib import pyplot as plt
@@ -82,13 +99,20 @@ class Describer(ExploratoryDataAnalyzer):
     def get_shape(self):
         return self.DataFrame.shape
     
-    def count_missing_data(self,columns=[],validate=True):
+    def count_missing_data(self,columns=[],validate=True,plot=False):
         if validate:
             columns = [c for c in columns if c in self.DataFrame.columns] # validation
         if len(columns) == 0:
-            return self.DataFrame.isna().sum()
+            missing = self.DataFrame.isna().sum()
         else:
-            return self.DataFrame[columns].isna().sum()
+            missing = self.DataFrame[columns].isna().sum()
+        if plot:
+            plt.bar(x=missing.index,height=missing)
+            plt.title("Missing Data By Column")
+            plt.xticks(rotation=45)
+            plt.show()
+        return missing
+    
     
     def list_data_types(self):
         return self.DataFrame.dtypes
@@ -157,10 +181,10 @@ class Describer(ExploratoryDataAnalyzer):
     def get_legend_info(self,data,all_data=True):
         colors = self.get_colors_from_values(data,all_data)
         if all_data:
-            legend_handles = [Line2D([0], [0], marker='o', color='w', label=str(k.capitalize()), markerfacecolor=colors['color_dict'][k], markersize=6) for k in colors['color_dict'].keys()]
+            legend_handles = [Line2D([0], [0], marker='o', color='w', label=str(k).capitalize(), markerfacecolor=colors['color_dict'][k], markersize=6) for k in colors['color_dict'].keys()]
             return {"handles":legend_handles,"colors":colors['color_list']}
         else:
-            legend_handles = [Line2D([0], [0], marker='o', color='w', label=str(k.capitalize()), markerfacecolor=colors[k], markersize=6) for k in colors.keys()]
+            legend_handles = [Line2D([0], [0], marker='o', color='w', label=str(k).capitalize(), markerfacecolor=colors[k], markersize=6) for k in colors.keys()]
             return {"handles":legend_handles,"colors":colors}
             
         
@@ -180,7 +204,11 @@ class Describer(ExploratoryDataAnalyzer):
             raise Exception("InvalidGraphTypeError",graph_type + " is not one of the graphs for which display_graph is implemented")
         
         if dropna:
-            data = data.dropna()
+            if type(data) == type(pd.DataFrame()):
+                data = data.dropna()
+            elif type(data) == type({}):
+                for k in data.keys():
+                    data[k]['data'] = data[k]['data'].dropna()
             
         if graph_type == "histogram":
        
@@ -281,14 +309,15 @@ class Describer(ExploratoryDataAnalyzer):
                             self.construct_scatter_data_dict(p,split_on),
                             p,
                             "Correlation: " + str(self.get_correlation_coefficient(p)),
-                            split_on) for p in pairs]
+                            dropna=False,
+                            split_on=split_on) for p in pairs]
     
     
     
     def show_box_plot(self,columns=[],validate=True,custom_string="",split_on = None):
         
         
-        ## Need to implement split_on
+      
         
         numerics = self.list_numeric_columns()
         if validate:
