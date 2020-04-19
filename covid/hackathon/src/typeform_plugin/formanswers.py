@@ -10,11 +10,10 @@ import json
 from bs4 import BeautifulSoup
 import requests 
 
-with open('typeform-secret.json','r') as f:
+with open('hackathon/typeform-secret.json','r') as f:
     auth = json.load(f)
-    
-attempt = requests.get("https://api.typeform.com/me",headers=auth)
-test_id = "upytiA"
+
+test_id = "osi208"
 
 form_test = requests.get("https://api.typeform.com/forms/"+test_id+"/responses",headers=auth)
 
