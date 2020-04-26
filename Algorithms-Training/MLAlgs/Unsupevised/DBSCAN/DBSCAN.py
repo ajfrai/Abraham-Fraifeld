@@ -366,4 +366,7 @@ class DBSCANNer:
         plt.title(title)
         plt.show()
         
-        
+clusterer = DBSCANNer(data)
+clusterer.plot_kdist_graph()
+clusterer.DBSCAN(700)
+clusterer.plot_clusters("World Bank Health System Clusters")
