@@ -1,0 +1,15 @@
+{
+  "real_house_price_2000_to_latest_pct": 68.9,
+  "real_price_peak2006_index": 155.4,
+  "real_price_trough2011_12_index": 100.7,
+  "peak_to_trough_drop_pct": -35.2,
+  "pti_2000": 4.26,
+  "pti_2006": 5.29,
+  "pti_latest": 5.02,
+  "active_listings_2016_07": 1463025,
+  "active_listings_latest": 1058693,
+  "listings_drop_pct": -27.6,
+  "real_wage_2003": 335.0,
+  "real_wage_latest": 376.0,
+  "real_wage_chg_pct_since2003": 12.2
+}
