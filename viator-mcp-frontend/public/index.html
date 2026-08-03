@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Viator Experiences — MCP App</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <div>
+      <h1>Viator Experiences</h1>
+      <p class="brand-sub">MCP App host &middot; <code id="endpoint">connecting…</code></p>
+    </div>
+  </div>
+
+  <div class="topbar-actions">
+    <span class="status" id="status" data-state="pending">
+      <span class="status-dot"></span><span id="status-text">Connecting</span>
+    </span>
+    <button type="button" class="ghost" id="theme-toggle" title="Toggle theme">
+      <span id="theme-label">Dark</span>
+    </button>
+    <button type="button" class="ghost" id="inspector-toggle" aria-expanded="false">
+      Inspector
+    </button>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- ------------------------------------------------------------------ -->
+  <aside class="sidebar">
+    <form id="search-form" class="panel">
+      <h2>Search experiences</h2>
+      <p class="hint">Calls <code>search_experiences</code> on the Viator MCP server and hands the result to the app.</p>
+
+      <label class="field">
+        <span>What are you looking for?</span>
+        <textarea id="searchTerm" name="searchTerm" rows="2" required
+          placeholder="kid-friendly things to do in Paris">kid-friendly things to do in Paris</textarea>
+      </label>
+
+      <div class="field-row">
+        <label class="field">
+          <span>Start date</span>
+          <input type="date" id="startDate" name="startDate" required>
+        </label>
+        <label class="field">
+          <span>End date</span>
+          <input type="date" id="endDate" name="endDate">
+        </label>
+      </div>
+
+      <div class="field-row">
+        <label class="field">
+          <span>Results</span>
+          <input type="number" id="limit" name="limit" min="1" max="10" value="5">
+        </label>
+        <label class="field">
+          <span>Currency</span>
+          <select id="currency" name="currency">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="AUD">AUD</option>
+            <option value="CAD">CAD</option>
+          </select>
+        </label>
+      </div>
+
+      <details class="more">
+        <summary>Refine</summary>
+        <div class="field-row">
+          <label class="field">
+            <span>Min price</span>
+            <input type="number" id="fromPrice" name="fromPrice" min="0" step="1" placeholder="any">
+          </label>
+          <label class="field">
+            <span>Max price</span>
+            <input type="number" id="toPrice" name="toPrice" min="0" step="1" placeholder="any">
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field">
+            <span>Max duration (min)</span>
+            <input type="number" id="duration" name="duration" min="0" step="15" placeholder="any">
+          </label>
+          <label class="field">
+            <span>Locale</span>
+            <input type="text" id="locale" name="locale" value="en-US">
+          </label>
+        </div>
+      </details>
+
+      <button type="submit" class="primary" id="search-button">Search</button>
+
+      <div class="presets">
+        <span>Try:</span>
+        <button type="button" class="chip" data-term="food tours in Rome">Rome food</button>
+        <button type="button" class="chip" data-term="skip-the-line museum tickets in Florence">Florence museums</button>
+        <button type="button" class="chip" data-term="day trips from Tokyo">Tokyo day trips</button>
+        <button type="button" class="chip" data-term="snorkeling and boat tours in Oahu">Oahu water</button>
+      </div>
+    </form>
+
+    <section class="panel" id="connection-panel">
+      <h2>Connection</h2>
+      <dl class="kv" id="connection-details">
+        <dt>Status</dt><dd id="conn-status">…</dd>
+      </dl>
+      <div id="tool-list" class="tool-list"></div>
+    </section>
+  </aside>
+
+  <!-- ------------------------------------------------------------------ -->
+  <section class="stage" id="stage">
+    <div class="stage-head">
+      <div>
+        <h2 id="stage-title">MCP App</h2>
+        <p class="hint" id="stage-sub">ui://mcp/experiences</p>
+      </div>
+      <div class="stage-actions">
+        <span class="badge" id="display-mode-badge">inline</span>
+        <button type="button" class="ghost" id="exit-fullscreen" hidden>Exit fullscreen</button>
+      </div>
+    </div>
+
+    <div class="stage-body" id="stage-body">
+      <div class="placeholder" id="placeholder">
+        <div class="placeholder-inner">
+          <div class="spinner" id="placeholder-spinner" hidden></div>
+          <h3 id="placeholder-title">Run a search to load the app</h3>
+          <p id="placeholder-text">
+            The Viator MCP server ships an interactive UI resource. This page fetches it,
+            runs the <code>ui/initialize</code> handshake, and feeds it the tool result.
+          </p>
+        </div>
+      </div>
+      <!-- The app frame is created by main.js so each search gets a fresh instance. -->
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------ -->
+  <aside class="inspector" id="inspector" hidden>
+    <div class="inspector-head">
+      <h2>Protocol inspector</h2>
+      <div>
+        <button type="button" class="ghost small" id="clear-log">Clear</button>
+        <button type="button" class="ghost small" id="close-inspector">Close</button>
+      </div>
+    </div>
+    <div class="inspector-filters">
+      <label><input type="checkbox" class="filter" value="host→app" checked> host→app</label>
+      <label><input type="checkbox" class="filter" value="app→host" checked> app→host</label>
+      <label><input type="checkbox" class="filter" value="host→server" checked> host→server</label>
+    </div>
+    <ol class="log" id="log"></ol>
+  </aside>
+
+</main>
+
+<script type="module" src="/main.js"></script>
+</body>
+</html>
