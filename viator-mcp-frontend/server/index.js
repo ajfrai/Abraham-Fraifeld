@@ -249,8 +249,33 @@ const server = http.createServer((req, res) => {
   });
 });
 
+// A busy port is an ordinary thing to hit, so explain it rather than letting
+// the unhandled 'error' event dump a stack trace.
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\nPort ${PORT} on ${HOST} is already in use.\n`);
+    console.error('  PORT=8080 npm start        run somewhere else');
+    console.error('  PORT=0 npm start           pick any free port\n');
+  } else if (err.code === 'EACCES') {
+    console.error(`\nNot allowed to bind ${HOST}:${PORT}.`);
+    console.error('Ports below 1024 need elevated privileges — try PORT=8080.\n');
+  } else if (err.code === 'EADDRNOTAVAIL') {
+    console.error(`\n${HOST} is not an address on this machine.`);
+    console.error('Use HOST=127.0.0.1 (default) or HOST=0.0.0.0 for every interface.\n');
+  } else {
+    console.error('\nCould not start the server:', err.message, '\n');
+  }
+  process.exit(1);
+});
+
 server.listen(PORT, HOST, () => {
-  console.log(`Viator MCP front end  →  http://${HOST}:${PORT}`);
+  // PORT=0 means the real port is only known once listening has begun.
+  const { port } = server.address();
+  const shown = HOST === '0.0.0.0' || HOST === '::' ? 'localhost' : HOST;
+  console.log(`Viator MCP front end  →  http://${shown}:${port}`);
+  if (shown === 'localhost') {
+    console.log(`                         (also on this machine's LAN address at :${port})`);
+  }
   console.log(`Upstream MCP server   →  ${ENDPOINT}`);
   console.log(`MCP App resource      →  ${APP_RESOURCE_URI}`);
 });

@@ -31,9 +31,18 @@ npm test            # both
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `PORT` | `3000` | `0` picks a free port. |
-| `HOST` | `127.0.0.1` | Bind address. |
+| `HOST` | `127.0.0.1` | Bind address. `0.0.0.0` listens on every interface. |
 | `VIATOR_MCP_URL` | `https://exp-app-mcp.prod.ep.viator.com/mcp` | Upstream MCP endpoint. |
 | `VIATOR_APP_URI` | `ui://mcp/experiences` | UI resource to embed. |
+
+```bash
+PORT=8080 npm start              # port 3000 already taken
+HOST=0.0.0.0 PORT=8080 npm start # reachable from other devices
+```
+
+Binding `0.0.0.0` puts the proxy on your network. It only relays the two read-only Viator
+tools and holds no credentials, but it is a plain HTTP dev server — keep it on networks you
+trust.
 
 Behind a corporate proxy, start with `NODE_USE_ENV_PROXY=1 npm start`.
 
