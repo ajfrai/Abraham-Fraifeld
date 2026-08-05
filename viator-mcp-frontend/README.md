@@ -117,6 +117,51 @@ cannot reach the page's DOM, cookies, or storage. That also means `'self'` is me
 its CSP, so `buildCsp()` never emits it and instead expands the `connectDomains` /
 `resourceDomains` the resource declares in its `_meta`.
 
+## Server metadata and change detection
+
+```bash
+node scripts/metadata.js            # report what the server discloses
+node scripts/metadata.js --json     # the raw snapshot
+node scripts/metadata.js --save     # write docs/mcp-snapshot.json
+node scripts/metadata.js --diff     # compare to the snapshot, exit 1 on drift
+```
+
+**There is no "last updated" to read.** MCP has no such field, this server publishes no
+version endpoint, and it sends neither `ETag` nor `Last-Modified`. `serverInfo.version` is
+hardcoded to `1.0.0`. So the only reliable way to know something changed is to hash what the
+server serves and compare — which is what `--diff` does. Run it on a schedule and it becomes
+a change feed.
+
+What *is* discoverable:
+
+| | |
+| --- | --- |
+| Server identity | `experiences-mcp` v`1.0.0`, plus its `instructions` string |
+| Capabilities | `resources`, `tools` |
+| Protocol ceiling | `2025-11-25` — higher than the `2025-06-18` it returns by default |
+| Version handling | Honours `2025-03-26` and `2025-06-18`; silently clamps anything else, including nonsense, to its ceiling |
+| Transport | `GET /mcp` → 405, so POST-only with no server-initiated SSE stream; no session id issued |
+| Method surface | Has `ping` and `resources/templates/list`; no `prompts/*`, `completion/*` or `logging/*` |
+| Tool schemas | Parameter lists and per-tool hashes of the input schema, output schema and description |
+| MCP App bundle | Byte length and SHA-256 |
+
+Two caveats found while building this:
+
+- Unsupported methods do **not** return a JSON-RPC error object. They return
+  `{"jsonRpcError":null,"message":"Missing handler for request type: …"}`, which has neither
+  `result` nor `error` — a spec deviation that will confuse strict clients.
+- Probe endpoints (`/health`, `/.well-known/*`) return 403 from DataDome bot protection, not
+  404, so absence cannot be distinguished from blocking.
+
+The bundle is not static. Between two runs two days apart in one session it changed by 54
+bytes — a loading skeleton added to the price on each card:
+
+```js
+r.isLoading?(0,D.jsx)(bD,{fullWidth:!0,height:`2em`}):
+```
+
+Nothing announced that. The hash is what caught it.
+
 ## Notes on the live API
 
 - **No authentication.** The MCP endpoint is public; no key is configured anywhere.
