@@ -1,0 +1,212 @@
+{
+  "id": "peloton",
+  "collectedAt": "2026-08-21T18:32:24.206Z",
+  "endpoint": "https://mcp.onepeloton.com/mcp",
+  "server": {
+    "name": "peloton-mcp",
+    "version": "1.0.0",
+    "instructionsHash": null,
+    "capabilities": {
+      "tools": {},
+      "resources": {}
+    }
+  },
+  "protocol": {
+    "defaultNegotiated": "2024-11-05",
+    "ceiling": "2024-11-05",
+    "honoursRequested": [
+      "2024-11-05"
+    ],
+    "clampsTo": {
+      "2025-03-26": "2024-11-05",
+      "2025-06-18": "2024-11-05",
+      "2025-11-21": "2024-11-05",
+      "2099-01-01": "2024-11-05"
+    }
+  },
+  "transport": {
+    "getStatus": 200,
+    "issuesSessionId": false
+  },
+  "methods": {
+    "supported": [
+      "ping",
+      "resources/templates/list"
+    ],
+    "unsupported": [
+      "prompts/list",
+      "completion/complete",
+      "logging/setLevel"
+    ]
+  },
+  "tools": [
+    {
+      "name": "search",
+      "required": [
+        "query"
+      ],
+      "parameters": [
+        "query",
+        "limitPerQuery"
+      ],
+      "template": "ui://widget/search-dpl_7bx6.html",
+      "templateSource": "tool._meta",
+      "standard": "skybridge",
+      "noauth": true,
+      "descriptionHash": "894c444dded47c36",
+      "inputSchemaHash": "c3e285e1975c5719",
+      "outputSchemaHash": "44136fa355b3678a"
+    },
+    {
+      "name": "fetch",
+      "required": [
+        "index"
+      ],
+      "parameters": [
+        "index",
+        "locale"
+      ],
+      "template": "ui://widget/class-details-dpl_7bx6.html",
+      "templateSource": "tool._meta",
+      "standard": "skybridge",
+      "noauth": true,
+      "descriptionHash": "3c57199fb5bac455",
+      "inputSchemaHash": "9c5e10f59043f6f1",
+      "outputSchemaHash": "44136fa355b3678a"
+    },
+    {
+      "name": "create-training-plan",
+      "required": [
+        "plan"
+      ],
+      "parameters": [
+        "title",
+        "locale",
+        "plan"
+      ],
+      "template": "ui://widget/training-plan-dpl_7bx6.html",
+      "templateSource": "tool._meta",
+      "standard": "skybridge",
+      "noauth": true,
+      "descriptionHash": "f96830b4b683c643",
+      "inputSchemaHash": "0bc68549d93791f6",
+      "outputSchemaHash": "44136fa355b3678a"
+    },
+    {
+      "name": "schedule",
+      "required": [
+        "classes"
+      ],
+      "parameters": [
+        "classes"
+      ],
+      "template": "ui://widget/schedule-dpl_7bx6.html",
+      "templateSource": "tool._meta",
+      "standard": "skybridge",
+      "noauth": false,
+      "descriptionHash": "ca7f8a4cc571f97b",
+      "inputSchemaHash": "552754ec6729aa2a",
+      "outputSchemaHash": "44136fa355b3678a"
+    }
+  ],
+  "resources": [
+    {
+      "uri": "ui://widget/search-dpl_7bx6.html",
+      "mimeType": "text/html+skybridge",
+      "standard": "skybridge",
+      "metaHash": "44136fa355b3678a"
+    },
+    {
+      "uri": "ui://widget/search.html",
+      "mimeType": "text/html+skybridge",
+      "standard": "skybridge",
+      "metaHash": "44136fa355b3678a"
+    },
+    {
+      "uri": "ui://widget/class-details-dpl_7bx6.html",
+      "mimeType": "text/html+skybridge",
+      "standard": "skybridge",
+      "metaHash": "44136fa355b3678a"
+    },
+    {
+      "uri": "ui://widget/class-details.html",
+      "mimeType": "text/html+skybridge",
+      "standard": "skybridge",
+      "metaHash": "44136fa355b3678a"
+    },
+    {
+      "uri": "ui://widget/training-plan-dpl_7bx6.html",
+      "mimeType": "text/html+skybridge",
+      "standard": "skybridge",
+      "metaHash": "44136fa355b3678a"
+    },
+    {
+      "uri": "ui://widget/training-plan.html",
+      "mimeType": "text/html+skybridge",
+      "standard": "skybridge",
+      "metaHash": "44136fa355b3678a"
+    },
+    {
+      "uri": "ui://widget/schedule-dpl_7bx6.html",
+      "mimeType": "text/html+skybridge",
+      "standard": "skybridge",
+      "metaHash": "44136fa355b3678a"
+    },
+    {
+      "uri": "ui://widget/schedule.html",
+      "mimeType": "text/html+skybridge",
+      "standard": "skybridge",
+      "metaHash": "44136fa355b3678a"
+    }
+  ],
+  "widgets": [
+    {
+      "uri": "ui://widget/search-dpl_7bx6.html",
+      "standard": "skybridge",
+      "bytes": 283717,
+      "sha256": "864244fdc94725931f5c0d1de71d820be67083f1b5499270c9a40dfead8f872b"
+    },
+    {
+      "uri": "ui://widget/search.html",
+      "standard": "skybridge",
+      "bytes": 283717,
+      "sha256": "864244fdc94725931f5c0d1de71d820be67083f1b5499270c9a40dfead8f872b"
+    },
+    {
+      "uri": "ui://widget/class-details-dpl_7bx6.html",
+      "standard": "skybridge",
+      "bytes": 242036,
+      "sha256": "4de45e695eec670131422f7393489885d1f8ff952c30b6ea7f28989a4eebee55"
+    },
+    {
+      "uri": "ui://widget/class-details.html",
+      "standard": "skybridge",
+      "bytes": 242036,
+      "sha256": "4de45e695eec670131422f7393489885d1f8ff952c30b6ea7f28989a4eebee55"
+    },
+    {
+      "uri": "ui://widget/training-plan-dpl_7bx6.html",
+      "standard": "skybridge",
+      "bytes": 292895,
+      "sha256": "164c0aca2e3cba302c67c215b8d1d416f24c533b1ac3464ea11157fa17e9cdd6"
+    },
+    {
+      "uri": "ui://widget/training-plan.html",
+      "standard": "skybridge",
+      "bytes": 292895,
+      "sha256": "164c0aca2e3cba302c67c215b8d1d416f24c533b1ac3464ea11157fa17e9cdd6"
+    },
+    {
+      "uri": "ui://widget/schedule-dpl_7bx6.html",
+      "standard": "skybridge",
+      "bytes": 81636,
+      "sha256": "7c2b6e905cb6ef65a27b0ef19e89c7cd30cc2ba9134bb8496b981988140ec6bc"
+    },
+    {
+      "uri": "ui://widget/schedule.html",
+      "standard": "skybridge",
+      "bytes": 81636,
+      "sha256": "7c2b6e905cb6ef65a27b0ef19e89c7cd30cc2ba9134bb8496b981988140ec6bc"
+    }
+  ]
+}

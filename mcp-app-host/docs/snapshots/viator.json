@@ -1,10 +1,11 @@
 {
-  "collectedAt": "2026-08-05T14:16:42.378Z",
+  "id": "viator",
+  "collectedAt": "2026-08-21T18:32:20.113Z",
   "endpoint": "https://exp-app-mcp.prod.ep.viator.com/mcp",
   "server": {
     "name": "experiences-mcp",
     "version": "1.0.0",
-    "instructions": "This server provides access to experiences related information and services.",
+    "instructionsHash": "7b564093ce3cb2d1",
     "capabilities": {
       "resources": {
         "subscribe": false,
@@ -29,13 +30,8 @@
     }
   },
   "transport": {
-    "streamableHttp": true,
     "getStatus": 405,
-    "issuesSessionId": false,
-    "cacheValidators": {
-      "etag": null,
-      "lastModified": null
-    }
+    "issuesSessionId": false
   },
   "methods": {
     "supported": [
@@ -48,16 +44,9 @@
       "logging/setLevel"
     ]
   },
-  "headers": {
-    "server": "Apache",
-    "via": "1.1 varnish",
-    "date": "Wed, 05 Aug 2026 14:16:42 GMT",
-    "x-datadome": "protected"
-  },
   "tools": [
     {
       "name": "get_experience_details",
-      "title": "Get experience details",
       "required": [
         "code",
         "sessionId"
@@ -69,14 +58,16 @@
         "currency",
         "sessionId"
       ],
-      "descriptionChars": 628,
+      "template": "ui://mcp/experiences",
+      "templateSource": "sole-ui-resource",
+      "standard": "mcp-apps",
+      "noauth": false,
       "descriptionHash": "f0b7f0732948e7ad",
       "inputSchemaHash": "7191be3414f34e87",
       "outputSchemaHash": "77742bd76ff99154"
     },
     {
       "name": "search_experiences",
-      "title": "Search for experiences",
       "required": [
         "searchTerm",
         "startDate",
@@ -95,7 +86,10 @@
         "locale",
         "sessionId"
       ],
-      "descriptionChars": 1698,
+      "template": "ui://mcp/experiences",
+      "templateSource": "tool._meta",
+      "standard": "mcp-apps",
+      "noauth": false,
       "descriptionHash": "8fce9a95db041221",
       "inputSchemaHash": "14455701f4987f71",
       "outputSchemaHash": "accb50739d267a12"
@@ -104,25 +98,17 @@
   "resources": [
     {
       "uri": "ui://mcp/experiences",
-      "name": "experiences",
       "mimeType": "text/html;profile=mcp-app",
-      "metaHash": "36979625776009b0",
-      "csp": {
-        "connectDomains": [
-          "https://*.viator.com"
-        ],
-        "resourceDomains": [
-          "https://cache.vtrcdn.com",
-          "https://*.viator.com",
-          "https://*.tripadvisor.com"
-        ]
-      }
+      "standard": "mcp-apps",
+      "metaHash": "36979625776009b0"
     }
   ],
-  "app": {
-    "uri": "ui://mcp/experiences",
-    "mimeType": "text/html;profile=mcp-app",
-    "bytes": 912431,
-    "sha256": "17e1e3d2a6fd4a1515cf23283a28badc3b840dcf709a60b7d13ff9509e48a150"
-  }
+  "widgets": [
+    {
+      "uri": "ui://mcp/experiences",
+      "standard": "mcp-apps",
+      "bytes": 907233,
+      "sha256": "ae43cfc32d22e904ac020ad7beb82d4e718ba96551ff78ab70cb400ce7b2cef4"
+    }
+  ]
 }

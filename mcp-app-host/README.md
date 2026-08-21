@@ -3,9 +3,9 @@
 A front end that renders the interactive app from **any** MCP server, across **both**
 widget standards, with no per-server code.
 
-Generalised from two single-purpose front ends in this repo
-([`viator-mcp-frontend`](../viator-mcp-frontend), [`peloton-mcp-frontend`](../peloton-mcp-frontend)),
-which are kept as the worked examples the abstraction came from.
+Generalised from two single-purpose front ends — one per standard — which it replaced.
+Both are in git history if you want the worked examples the abstraction came from:
+`git show 72b496c --stat`.
 
 ![The host rendering Peloton's widget](docs/screenshot.png)
 
@@ -20,6 +20,8 @@ Node 18+. No dependencies, no build step.
 
 ```bash
 npm run probe -- <endpoint>  # inspect a server before registering it
+npm run metadata             # what each server discloses about itself
+npm run metadata:diff        # detect changes since the last snapshot
 npm test                     # 27 checks against live servers
 ```
 
@@ -115,6 +117,28 @@ adapter says so rather than hiding it.
 | `viator` | mcp-apps | Tours and activities. No auth. |
 | `peloton` | skybridge | Class search. Only `search` is `noauth`. |
 | `deepwiki` | *none* | Data-only, included as the graceful-degradation case: the UI marks its tools "data only" rather than failing. |
+
+## Detecting server changes
+
+```bash
+npm run metadata              # report every registered server
+npm run metadata -- viator    # just one
+npm run metadata -- --save    # write docs/snapshots/<id>.json
+npm run metadata:diff         # compare to the snapshots, exit 1 on drift
+```
+
+**There is no "last updated" to read.** MCP has no such field, and none of these servers
+publish a version endpoint, an `ETag`, or a `Last-Modified`; their `serverInfo.version` is
+pinned at `1.0.0` and never moves. Hashing what they serve is the only honest way to know
+something changed, which is what `--diff` does — on a schedule, it becomes the change feed
+they do not provide.
+
+It earns its keep. It caught Viator shipping a 54-byte change to its app bundle
+mid-session (a loading skeleton added to each card's price), entirely unannounced.
+
+The report also surfaces things the docs do not state: each server's real protocol
+ceiling, which older versions it honours versus silently clamps, whether the transport is
+POST-only, and which optional methods exist.
 
 ## Known limits
 

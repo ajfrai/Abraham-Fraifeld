@@ -107,6 +107,21 @@ Add the server to the `expectations` array in `scripts/smoke.js` and `cases` in
 `scripts/e2e.js`. Both are data-driven, so a new server is a few lines and the whole
 sequence runs against it.
 
+## Step 6 — Snapshot it
+
+```bash
+npm run metadata -- <id> --save
+```
+
+These servers ship changes without announcing them, and nothing in MCP reports a version
+or a modification time. The snapshot in `docs/snapshots/<id>.json` fingerprints the tool
+schemas and widget bundles so `npm run metadata:diff` can tell you when one moves — it
+exits 1 on drift, so it works as a scheduled check.
+
+Expect real drift: a widget bundle hash changing is normal and usually harmless. A
+changed `inputSchemaHash` is not — it means the arguments you send may no longer be
+valid, and the defaults in `servers.json` should be re-checked.
+
 ## Troubleshooting
 
 | Symptom | Cause |

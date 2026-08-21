@@ -1,0 +1,105 @@
+{
+  "id": "deepwiki",
+  "collectedAt": "2026-08-21T18:32:40.373Z",
+  "endpoint": "https://mcp.deepwiki.com/mcp",
+  "server": {
+    "name": "DeepWiki",
+    "version": "2.14.3",
+    "instructionsHash": "6561b85d61a438e1",
+    "capabilities": {
+      "experimental": {},
+      "prompts": {
+        "listChanged": true
+      },
+      "resources": {
+        "subscribe": false,
+        "listChanged": true
+      },
+      "tools": {
+        "listChanged": true
+      }
+    }
+  },
+  "protocol": {
+    "defaultNegotiated": "2025-06-18",
+    "ceiling": "2025-11-25",
+    "honoursRequested": [
+      "2024-11-05",
+      "2025-03-26",
+      "2025-06-18"
+    ],
+    "clampsTo": {
+      "2025-11-21": "2025-11-25",
+      "2099-01-01": "2025-11-25"
+    }
+  },
+  "transport": {
+    "getStatus": 200,
+    "issuesSessionId": false
+  },
+  "methods": {
+    "supported": [
+      "ping",
+      "resources/templates/list",
+      "prompts/list"
+    ],
+    "unsupported": [
+      "completion/complete",
+      "logging/setLevel"
+    ]
+  },
+  "tools": [
+    {
+      "name": "ask_question",
+      "required": [
+        "repoName",
+        "question"
+      ],
+      "parameters": [
+        "repoName",
+        "question"
+      ],
+      "template": null,
+      "templateSource": "none",
+      "standard": null,
+      "noauth": false,
+      "descriptionHash": "6eb4ca4c808e01d0",
+      "inputSchemaHash": "fc67cfc7a6567b5e",
+      "outputSchemaHash": "320e41851b1ddd81"
+    },
+    {
+      "name": "read_wiki_contents",
+      "required": [
+        "repoName"
+      ],
+      "parameters": [
+        "repoName"
+      ],
+      "template": null,
+      "templateSource": "none",
+      "standard": null,
+      "noauth": false,
+      "descriptionHash": "7bfcb9ac7618c84e",
+      "inputSchemaHash": "fe2300899f7b8843",
+      "outputSchemaHash": "320e41851b1ddd81"
+    },
+    {
+      "name": "read_wiki_structure",
+      "required": [
+        "repoName"
+      ],
+      "parameters": [
+        "repoName"
+      ],
+      "template": null,
+      "templateSource": "none",
+      "standard": null,
+      "noauth": false,
+      "descriptionHash": "43db0d8427db5230",
+      "inputSchemaHash": "fe2300899f7b8843",
+      "outputSchemaHash": "320e41851b1ddd81"
+    }
+  ],
+  "resources": [],
+  "widgets": []
+}
