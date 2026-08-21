@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peloton Classes — MCP App</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚴</text></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <div>
+      <h1>Peloton Classes</h1>
+      <p class="brand-sub">skybridge widget host &middot; <code id="endpoint">connecting…</code></p>
+    </div>
+  </div>
+
+  <div class="topbar-actions">
+    <span class="status" id="status" data-state="pending">
+      <span class="status-dot"></span><span id="status-text">Connecting</span>
+    </span>
+    <button type="button" class="ghost" id="theme-toggle"><span id="theme-label">Dark</span></button>
+    <button type="button" class="ghost" id="inspector-toggle" aria-expanded="false">Inspector</button>
+  </div>
+</header>
+
+<main class="layout">
+
+  <aside class="sidebar">
+    <form id="search-form" class="panel">
+      <h2>Search classes</h2>
+      <p class="hint">Calls <code>search</code> on the Peloton MCP server and feeds the result to its widget.</p>
+
+      <label class="field">
+        <span>Natural-language query</span>
+        <textarea id="query" name="query" rows="2" required
+          placeholder="30 min beginner yoga">30 min beginner yoga</textarea>
+      </label>
+
+      <button type="submit" class="primary" id="search-button">Search</button>
+
+      <div class="presets">
+        <span>Try:</span>
+        <button type="button" class="chip" data-q="20 min 70s ride">70s ride</button>
+        <button type="button" class="chip" data-q="strength training with Adrian Williams">Adrian strength</button>
+        <button type="button" class="chip" data-q="classes with Beyoncé music">Beyoncé</button>
+        <button type="button" class="chip" data-q="advanced 45 min running">45 min run</button>
+        <button type="button" class="chip" data-q="10 min meditation">Meditation</button>
+      </div>
+    </form>
+
+    <section class="panel">
+      <h2>Connection</h2>
+      <dl class="kv" id="connection-details">
+        <dt>Status</dt><dd id="conn-status">…</dd>
+      </dl>
+      <div id="tool-list" class="tool-list"></div>
+    </section>
+  </aside>
+
+  <section class="stage" id="stage">
+    <div class="stage-head">
+      <div>
+        <h2 id="stage-title">Peloton widget</h2>
+        <p class="hint" id="stage-sub">no widget mounted</p>
+      </div>
+      <div class="stage-actions">
+        <span class="badge" id="display-mode-badge">inline</span>
+        <button type="button" class="ghost" id="exit-fullscreen" hidden>Exit fullscreen</button>
+      </div>
+    </div>
+
+    <div class="stage-body" id="stage-body">
+      <div class="placeholder" id="placeholder">
+        <div class="placeholder-inner">
+          <div class="spinner" id="placeholder-spinner" hidden></div>
+          <h3 id="placeholder-title">Run a search to load the widget</h3>
+          <p id="placeholder-text">
+            Peloton's MCP server ships OpenAI Apps SDK widgets. This page fetches one,
+            injects a <code>window.openai</code> bridge, and hands it the tool result.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="inspector" id="inspector" hidden>
+    <div class="inspector-head">
+      <h2>Bridge inspector</h2>
+      <div>
+        <button type="button" class="ghost small" id="clear-log">Clear</button>
+        <button type="button" class="ghost small" id="close-inspector">Close</button>
+      </div>
+    </div>
+    <div class="inspector-filters">
+      <label><input type="checkbox" class="filter" value="host→widget" checked> host→widget</label>
+      <label><input type="checkbox" class="filter" value="widget→host" checked> widget→host</label>
+      <label><input type="checkbox" class="filter" value="host→server" checked> host→server</label>
+    </div>
+    <ol class="log" id="log"></ol>
+  </aside>
+
+</main>
+
+<script type="module" src="/main.js"></script>
+</body>
+</html>
