@@ -1,0 +1,52 @@
+{
+  "$comment": "Registry of MCP servers this host can front. Add entries with `npm run probe -- <url> --save`. See ../.claude/skills/mcp-app-onboarding.",
+  "servers": [
+    {
+      "id": "viator",
+      "label": "Viator Experiences",
+      "endpoint": "https://exp-app-mcp.prod.ep.viator.com/mcp",
+      "notes": "Tours and activities. No auth. Ships an MCP App (SEP-1865).",
+      "defaults": {
+        "search_experiences": {
+          "searchTerm": "food tours in Rome",
+          "limit": 5,
+          "currency": "USD",
+          "sessionId": "auto:uuid",
+          "startDate": "auto:today+7",
+          "endDate": "auto:today+10"
+        }
+      }
+    },
+    {
+      "id": "peloton",
+      "label": "Peloton Classes",
+      "endpoint": "https://mcp.onepeloton.com/mcp",
+      "notes": "Class search. Only `search` is noauth; the rest need member OAuth.",
+      "csp": {
+        "resourceDomains": [
+          "https://res.cloudinary.com",
+          "https://s3.amazonaws.com",
+          "https://*.amazonaws.com",
+          "https://*.onepeloton.com",
+          "https://*.pelocdn.com",
+          "https://fonts.googleapis.com",
+          "https://fonts.gstatic.com"
+        ],
+        "connectDomains": [
+          "https://*.onepeloton.com"
+        ]
+      },
+      "defaults": {
+        "search": {
+          "query": "30 min beginner yoga"
+        }
+      }
+    },
+    {
+      "id": "deepwiki",
+      "label": "DeepWiki (data only)",
+      "endpoint": "https://mcp.deepwiki.com/mcp",
+      "notes": "Documentation Q&A for GitHub repositories. Data only \u2014 no UI resources, so nothing to render."
+    }
+  ]
+}

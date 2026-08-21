@@ -15,7 +15,12 @@ function loadPlaywright() {
     () => require('playwright'),
     () => {
       const { execSync } = require('node:child_process');
-      const root = execSync('npm root -g', { encoding: 'utf8' }).trim();
+      // npm leaks its own prefix into child processes, so `npm root -g` run
+      // under `npm --prefix X` reports X instead of the real global root.
+      const env = { ...process.env };
+      delete env.npm_config_prefix;
+      delete env.npm_config_global_prefix;
+      const root = execSync('npm root -g', { encoding: 'utf8', env }).trim();
       return createRequire(`${root}/`)('playwright');
     },
   ];

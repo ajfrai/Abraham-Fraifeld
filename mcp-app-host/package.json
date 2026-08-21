@@ -1,0 +1,16 @@
+{
+  "name": "mcp-app-host",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A front end that hosts MCP apps from any server, across both widget standards",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "probe": "node scripts/probe.js",
+    "smoke": "node scripts/smoke.js",
+    "e2e": "node scripts/e2e.js",
+    "test": "node scripts/smoke.js && node scripts/e2e.js"
+  },
+  "engines": { "node": ">=18" },
+  "license": "MIT"
+}
