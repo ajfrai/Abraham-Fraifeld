@@ -122,6 +122,32 @@ Expect real drift: a widget bundle hash changing is normal and usually harmless.
 changed `inputSchemaHash` is not — it means the arguments you send may no longer be
 valid, and the defaults in `servers.json` should be re-checked.
 
+## Deploying
+
+`npm run deploy` (`vercel deploy --prod`) ships the host to the stable alias in the
+README. Two things about it are not obvious from a passing `vercel build`:
+
+- **`[...path].js` is a Next.js convention, not a Vercel one.** Outside a framework, it
+  silently compiles to a single-segment route — multi-segment paths 404 at the platform,
+  before your code runs. Use an explicit `rewrites` rule to one plainly-named function
+  instead (`api/index.js`, already set up this way).
+- **`require('../servers.json')`, written literally in the call, is what survives the
+  file tracer.** `includeFiles` in `vercel.json` can *report* success
+  (`.vc-config.json` records the mapping) while the file is absent at runtime.
+  `require.resolve()` on a path built from a variable has the same gap. Any new file a
+  route needs to read at runtime needs this same literal-`require()` treatment, or it
+  needs to go through `require.resolve()` written as its own literal call, the way
+  `server/app.js` does for the skybridge shim.
+
+Verify a deploy against the **real URL** with curl — routes, both widget standards, a
+tool call — not just a local `vercel build`, which was observed to behave differently
+from what the platform actually does with `includeFiles`.
+
+**Before making a deployment public,** check `servers.json` for `authEnv`. A server
+with one exposes that token's calls to anyone who has the URL, since there's no auth in
+front of the proxy itself. Deployment protection (Vercel's SSO wall) is the guard for
+that case — only turn it off for deployments where every registered server is `noauth`.
+
 ## Troubleshooting
 
 | Symptom | Cause |

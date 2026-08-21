@@ -11,7 +11,8 @@
     "e2e": "node scripts/e2e.js",
     "test": "node scripts/smoke.js && node scripts/e2e.js",
     "metadata": "node scripts/metadata.js",
-    "metadata:diff": "node scripts/metadata.js --diff"
+    "metadata:diff": "node scripts/metadata.js --diff",
+    "deploy": "vercel deploy --prod"
   },
   "engines": {
     "node": ">=18"

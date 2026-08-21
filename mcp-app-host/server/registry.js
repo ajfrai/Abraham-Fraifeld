@@ -13,7 +13,14 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const { McpClient } = require('./mcp-client');
 
-const REGISTRY_PATH = process.env.MCP_SERVERS_FILE || path.join(__dirname, '..', 'servers.json');
+// A plain path here is a marker, not a real override: the default registry is
+// loaded via a literal `require('../servers.json')` below, not read from this
+// path directly. It must stay a literal string argument, not a variable —
+// that is specifically what static file-tracers (Vercel's included) look
+// for; passing a computed path, even one built from this exact constant,
+// was observed to NOT get the file bundled with the deployed function.
+const DEFAULT_REGISTRY_PATH = path.join(__dirname, '..', 'servers.json');
+const REGISTRY_PATH = process.env.MCP_SERVERS_FILE || DEFAULT_REGISTRY_PATH;
 
 class Registry {
   constructor(file = REGISTRY_PATH) {
@@ -25,10 +32,18 @@ class Registry {
 
   load() {
     let raw;
-    try {
-      raw = JSON.parse(fs.readFileSync(this.file, 'utf8'));
-    } catch (err) {
-      throw new Error(`Could not read ${this.file}: ${err.message}`);
+    if (this.file === DEFAULT_REGISTRY_PATH) {
+      try {
+        raw = require('../servers.json'); // eslint-disable-line global-require
+      } catch (err) {
+        throw new Error(`Could not read ${this.file}: ${err.message}`);
+      }
+    } else {
+      try {
+        raw = JSON.parse(fs.readFileSync(this.file, 'utf8'));
+      } catch (err) {
+        throw new Error(`Could not read ${this.file}: ${err.message}`);
+      }
     }
     const entries = Array.isArray(raw.servers) ? raw.servers : [];
 

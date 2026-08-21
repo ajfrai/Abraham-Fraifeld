@@ -140,6 +140,55 @@ The report also surfaces things the docs do not state: each server's real protoc
 ceiling, which older versions it honours versus silently clamps, whether the transport is
 POST-only, and which optional methods exist.
 
+## Deploying
+
+Live at **https://mcp-app-host-five.vercel.app** — a stable alias that follows whatever is
+current in production, unlike the hash-suffixed URL each individual deploy gets.
+
+```bash
+npx vercel link      # first time only
+npm run deploy       # vercel deploy --prod
+```
+
+The project is a Node HTTP server (`server/app.js`'s `handle(req, res)`), not something
+Vercel's zero-config Node runtime can run directly — a serverless platform has no port to
+bind. `server/index.js` stays the local-dev entry point (`http.createServer` + listen);
+`api/index.js` wraps the identical handler for Vercel, and `vercel.json` rewrites every
+`/api/*` request to it. Static assets (`index.html`, `main.js`, `hosts/*.js`) are served
+straight from the CDN via `outputDirectory: "public"` and never touch the function.
+
+Two failures only showed up against the real platform, not `vercel build` run locally:
+
+**`[...path].js` looked right and wasn't.** That catch-all bracket syntax is a Next.js
+routing convention, not a general Vercel one. Outside a framework, Vercel's plain Node
+builder compiled it to a single-segment regex (`^/api/([^/]+)$`) — `/api/servers` matched,
+`/api/servers/viator/info` 404'd at the platform, before ever reaching this code. Confirmed
+by reading the generated `.vercel/output/config.json` route table directly rather than
+guessing from the symptom. Fixed with an explicit `rewrites` rule in `vercel.json` pointing
+every `/api/*` request at one plainly-named function (`api/index.js`), the pattern that
+actually works for a non-framework project.
+
+**`servers.json` and the skybridge shim need `require()` on a literal path, not
+`includeFiles`.** `vercel.json`'s `functions.includeFiles` looked like it worked —
+`.vc-config.json` recorded a `filePathMap` entry for it — but the file never actually
+landed in the local build output, and `require.resolve()` on a *computed* path (even one
+built from an already-literal constant) had the same silent gap. What reliably survives
+Vercel's file tracer is `require('../servers.json')` with the string written directly in
+the call, no intermediate variable. This was caught by inspecting the built function's
+filesystem (`find .vercel/output/functions/... -name servers.json`), not by trusting a
+green build.
+
+Everything else — CSP correctness, shim injection, live tool calls returning real Viator
+and Peloton data, the graceful data-only case for DeepWiki — was verified against the
+actual deployed URL with `curl`, not assumed from a passing local build.
+
+**Security note on going public:** deployment protection (Vercel's SSO wall) was
+deliberately turned off so the link works without a Vercel login. That's safe here
+specifically because nothing in `servers.json` sets `authEnv` — there is no bearer token
+for a public caller to reach through this proxy. Registering a server that does set
+`authEnv` on a public deployment would expose that token's calls to anyone with the URL;
+put such a server behind deployment protection, or don't deploy it publicly at all.
+
 ## Known limits
 
 - **Two standards only.** A third mime type returns HTTP 415 naming what it saw, rather
