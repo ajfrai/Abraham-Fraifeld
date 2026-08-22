@@ -121,6 +121,47 @@ async function main() {
     });
   }
 
+  // Both standards, mounted with no payload at all.
+  for (const { id, tool, standard } of cases) {
+    await check(`${id}: previewing empty mounts the ${standard} app with no data`, async () => {
+      await page.selectOption('#server-select', id);
+      await page.waitForFunction(() => document.getElementById('status-text').textContent === 'Connected', null, { timeout: 45000 });
+      await page.selectOption('#tool-select', tool);
+      await page.waitForTimeout(400);
+
+      await page.click('#preview-button');
+      await page.waitForSelector('iframe.app-frame', { timeout: 60000 });
+      await page.waitForFunction(() => document.getElementById('placeholder').hidden, null, { timeout: 60000 });
+      await page.waitForTimeout(4000);
+
+      // The app must be alive — not a blank frame — and must not have been
+      // handed a result. Skybridge exposes that directly on its bridge.
+      const alive = await app().locator('body').evaluate((body) => ({
+        html: body.innerHTML.length,
+        toolOutput: window.openai ? window.openai.toolOutput : 'n/a',
+      }));
+      assert.ok(alive.html > 0, 'the frame rendered nothing at all');
+      if (alive.toolOutput !== 'n/a') {
+        assert.strictEqual(alive.toolOutput, null, 'a tool result leaked into the empty preview');
+      }
+
+      // And no tool call was made for it.
+      const sent = await page.$$eval('.log-title', (els) => els.map((e) => e.textContent));
+      assert.ok(
+        sent.some((t) => /empty preview/.test(t)),
+        `no empty-preview log entry: ${sent.slice(-4).join(' | ')}`,
+      );
+    });
+  }
+
+  await check('a tool with no widget cannot be previewed', async () => {
+    await page.selectOption('#server-select', 'viator');
+    await page.waitForFunction(() => document.getElementById('status-text').textContent === 'Connected', null, { timeout: 45000 });
+    await page.selectOption('#tool-select', 'get_experience_details');
+    await page.waitForTimeout(400);
+    assert.strictEqual(await page.isDisabled('#preview-button'), true, 'preview was offered for a data-only tool');
+  });
+
   await check('no CSP violations across either standard', async () => {
     assert.deepStrictEqual(cspViolations, [], `CSP blocked something:\n        ${cspViolations.join('\n        ')}`);
   });

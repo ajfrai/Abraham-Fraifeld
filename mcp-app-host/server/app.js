@@ -188,8 +188,12 @@ async function describeServer(entry) {
   const resources = resourcesResult.resources || [];
   const uiResources = resources.filter(isUiResource);
 
-  const tools = (toolsResult.tools || []).map((tool) => {
-    const { uri, source } = templateForTool(tool, resources);
+  const allTools = toolsResult.tools || [];
+
+  const tools = allTools.map((tool) => {
+    // The sibling list matters: a tool that names no widget while its peers do
+    // has opted out, and must not inherit one by fallback.
+    const { uri, source } = templateForTool(tool, resources, allTools);
     const resource = resources.find((r) => r.uri === uri);
     return {
       name: tool.name,
@@ -199,6 +203,9 @@ async function describeServer(entry) {
       template: uri,
       templateSource: source,
       standard: standardForMimeType(resource?.mimeType) || null,
+      // "app" without "model" means the tool exists for an already-rendered
+      // app to call, not for a caller to invoke directly.
+      visibility: tool._meta?.ui?.visibility || null,
       securitySchemes: tool._meta?.securitySchemes || null,
       defaults: resolveDefaults(entry.defaults?.[tool.name] || {}),
     };

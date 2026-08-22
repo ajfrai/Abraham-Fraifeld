@@ -140,8 +140,8 @@ async function collect(entry) {
 
     methods,
 
-    tools: (toolsResult.tools || []).map((tool) => {
-      const { uri, source } = templateForTool(tool, resources);
+    tools: (toolsResult.tools || []).map((tool, _i, allTools) => {
+      const { uri, source } = templateForTool(tool, resources, allTools);
       const resource = resources.find((r) => r.uri === uri);
       return {
         name: tool.name,

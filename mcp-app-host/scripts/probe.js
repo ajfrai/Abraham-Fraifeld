@@ -98,8 +98,10 @@ async function main() {
     standard: standardForMimeType(r.mimeType),
   }));
 
-  report.tools = (toolsResult.tools || []).map((tool) => {
-    const { uri, source } = templateForTool(tool, resources);
+  const allTools = toolsResult.tools || [];
+
+  report.tools = allTools.map((tool) => {
+    const { uri, source } = templateForTool(tool, resources, allTools);
     const resource = resources.find((r) => r.uri === uri);
     return {
       name: tool.name,

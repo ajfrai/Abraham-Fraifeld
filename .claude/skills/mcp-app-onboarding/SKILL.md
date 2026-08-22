@@ -40,8 +40,16 @@ Read the output for four things:
 2. **Per-tool `[standard · noauth]`** — `noauth` tools work with no credentials.
    Anything else needs OAuth, and calls will 401.
 3. **`renders … (via …)`** — how the widget was resolved. `tool._meta` is authoritative.
-   `sole-ui-resource` is a fallback that only holds while the server has exactly one UI
-   resource; note it, because adding a second would silently change behaviour.
+   `sole-ui-resource` is a guess that only holds while the server has exactly one UI
+   resource; note it, because adding a second would silently change behaviour. A tool
+   shown as `data-only` with source `declared-none` is not a detection failure — it means
+   the tool named no widget while its peers did, which is a deliberate opt-out.
+
+   **Check that the renderable tool is the one you would expect.** Servers commonly pair
+   a list tool with a detail tool, where only the list renders and the detail exists for
+   the rendered app to call back into (Viator: `search_experiences` renders,
+   `get_experience_details` does not). If a detail-shaped tool claims a widget, the
+   resolution is wrong — it will be handed a payload the widget cannot read.
 4. **`domains seen`** — static URL references, used to seed a CSP. Treat as a starting
    point, never as complete (see Step 4).
 
@@ -100,6 +108,10 @@ Check each of these:
   remounts them; MCP Apps accept a live context update.
 - **Interactions work.** Click through to a detail view. Watch for a proxied `tools/call`
   in the inspector.
+- **The empty state renders.** Hit **Preview empty** — it mounts the widget with no tool
+  result, so you see what the app shows before data arrives. A widget that renders
+  nothing at all here (zero height, blank frame) usually means its bridge never came up,
+  which a populated run can mask.
 
 ## Step 5 — Cover it
 
@@ -153,6 +165,7 @@ that case — only turn it off for deployments where every registered server is 
 | Symptom | Cause |
 | --- | --- |
 | App blank, no errors | Tool result reached the host but not the app. Check for `tool_response`/`tool-result` in the inspector. |
+| App renders wrong/empty despite a good tool result | The widget got a payload shaped for a *different* tool. Check `templateSource` in `/info`: a detail tool resolving `sole-ui-resource` has inherited the list tool's widget. It should be `declared-none`. |
 | Images blank, `Refused to load` | CSP is missing a domain. Add it to `csp.resourceDomains`. |
 | Images blank, `ERR_CONNECTION_RESET` | Network egress, not CSP. Not a code fix. |
 | Frame stuck at 620px | The app never reported a height. For skybridge, the shim measures `document.body` — never `documentElement`, which is clamped to the iframe viewport and reports back whatever the host just set. |

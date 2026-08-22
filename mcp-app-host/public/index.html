@@ -51,7 +51,11 @@
       <!-- Fields are generated from the tool's inputSchema. -->
       <div id="tool-fields"></div>
 
-      <button type="submit" class="primary" id="run-button">Run tool</button>
+      <div class="actions">
+        <button type="submit" class="primary" id="run-button">Run tool</button>
+        <button type="button" class="ghost" id="preview-button"
+          title="Mount the app with no tool result, to see its empty state">Preview empty</button>
+      </div>
       <p class="hint" id="tool-warning"></p>
     </form>
   </aside>

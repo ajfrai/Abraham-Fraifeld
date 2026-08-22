@@ -31,20 +31,52 @@ function isUiResource(resource) {
   return Boolean(resource && standardForMimeType(resource.mimeType));
 }
 
+/** Does this tool's metadata name a widget, under either standard's key? */
+function declaredTemplate(tool) {
+  const meta = tool?._meta || {};
+  return (
+    meta.ui?.resourceUri ||           // MCP Apps
+    meta['openai/outputTemplate'] ||  // OpenAI Apps SDK
+    null
+  );
+}
+
 /**
  * Finds the UI resource a tool renders into.
  *
- * Both standards put this on the tool definition, under their own key. When
- * neither is present the server may still expose exactly one UI resource, in
- * which case there is no ambiguity to resolve.
+ * Both standards put this on the tool definition, under their own key. The
+ * subtlety is what a *missing* key means, and it is not "unknown":
+ *
+ * Viator's `get_experience_details` carries `_meta.ui` with a `visibility` but
+ * no `resourceUri`. That is a deliberate statement — the tool renders nothing
+ * of its own, it exists for the already-rendered app to call (visibility
+ * "app") when someone opens a detail view. Treating the absent key as "no
+ * information" and falling back to the server's only UI resource handed it the
+ * search-results widget, which then received a `{experienceDetails}` payload
+ * where it expects `{experiences: [...]}`.
+ *
+ * So a tool that participates in a template convention but omits its template
+ * is reported as having none. The sole-UI-resource guess is kept only for
+ * servers that use no per-tool convention at all, where it is the only signal
+ * available — and it is reported as a guess so callers can see it was one.
+ *
+ * @param {object} tool
+ * @param {object[]} resources  from resources/list
+ * @param {object[]} [siblings] every tool on the same server, for convention detection
  */
-function templateForTool(tool, resources = []) {
-  const meta = tool?._meta || {};
-
-  const declared =
-    meta.ui?.resourceUri ||           // MCP Apps
-    meta['openai/outputTemplate'];    // OpenAI Apps SDK
+function templateForTool(tool, resources = [], siblings = null) {
+  const declared = declaredTemplate(tool);
   if (declared) return { uri: declared, source: 'tool._meta' };
+
+  // This tool speaks the metadata convention and chose not to name a widget.
+  if (tool?._meta?.ui) return { uri: null, source: 'declared-none' };
+
+  // Or its siblings do, which says the server is explicit about templates and
+  // this tool's silence is a deliberate opt-out rather than an absent feature.
+  const family = siblings || [];
+  if (family.some((t) => t !== tool && declaredTemplate(t))) {
+    return { uri: null, source: 'declared-none' };
+  }
 
   const uiResources = resources.filter(isUiResource);
   if (uiResources.length === 1) {

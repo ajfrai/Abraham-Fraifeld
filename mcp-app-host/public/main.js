@@ -173,7 +173,14 @@ function showPlaceholder({ title, text, busy = false }) {
   $('placeholder-spinner').hidden = !busy;
 }
 
-async function mount({ tool, result, args }) {
+/**
+ * Mounts a widget and, when there is one, hands it a tool result.
+ *
+ * `result` is optional. Omitting it mounts the app with its bridge live and
+ * its context pushed, but no payload — which is how the app's own empty state
+ * gets rendered, without inventing fake data to feed it.
+ */
+async function mount({ tool, result = null, args = null }) {
   teardown();
 
   const Adapter = adapterFor(tool.standard);
@@ -236,7 +243,19 @@ async function mount({ tool, result, args }) {
   });
 
   $('placeholder').hidden = true;
-  adapter.deliver({ result, args });
+
+  // Context first and always; the payload only if there is one.
+  adapter.pushContext();
+  if (result) {
+    adapter.deliver({ result, args });
+  } else {
+    addLog({
+      direction: 'host→app',
+      at: Date.now(),
+      note: 'empty preview — no tool result sent',
+      payload: { tool: tool.name, template: tool.template },
+    });
+  }
 
   state.lastMount = { tool, result, args };
 }
@@ -463,6 +482,42 @@ async function runTool(event) {
   }
 }
 
+/**
+ * Mounts the widget with no tool result at all.
+ *
+ * Useful for seeing an app's own empty state — what it renders before any data
+ * arrives, which is a real design surface and otherwise invisible here. No tool
+ * is called, so this also works for a server whose tools need credentials.
+ */
+async function previewEmpty() {
+  if (!state.tool) return;
+
+  if (!state.tool.template) {
+    showPlaceholder({
+      title: 'No app to preview',
+      text: `${state.tool.name} declares no UI resource, so there is nothing to render empty.`,
+    });
+    return;
+  }
+
+  const button = $('preview-button');
+  button.disabled = true;
+  button.textContent = 'Loading…';
+  teardown();
+  showPlaceholder({ title: `Loading ${state.tool.template}…`, text: 'no data will be sent', busy: true });
+
+  try {
+    $('stage-sub').textContent = `${state.tool.template} · empty`;
+    await mount({ tool: state.tool });
+  } catch (err) {
+    console.error(err);
+    showPlaceholder({ title: 'Could not load the app', text: String(err.message || err) });
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Preview empty';
+  }
+}
+
 /* ------------------------------------------------------------------ *
  * Selection
  * ------------------------------------------------------------------ */
@@ -477,11 +532,21 @@ function selectTool(name) {
 
   const warning = $('tool-warning');
   if (!state.tool) warning.textContent = '';
-  else if (!state.tool.template) warning.textContent = 'This tool declares no UI resource — it will return data only.';
-  else if (!state.tool.standard) warning.textContent = 'This tool\'s resource uses an unrecognised mime type.';
-  else if (state.tool.securitySchemes && !state.tool.securitySchemes.some((s) => s.type === 'noauth')) {
+  else if (!state.tool.template) {
+    // `declared-none` is a statement by the server, not a gap in our detection,
+    // so say which it is rather than implying the tool is broken.
+    warning.textContent = state.tool.templateSource === 'declared-none'
+      ? `${state.tool.name} declares no widget of its own — it returns data, and exists for a rendered app to call.`
+      : 'This tool declares no UI resource — it will return data only.';
+  } else if (!state.tool.standard) warning.textContent = 'This tool\'s resource uses an unrecognised mime type.';
+  else if (state.tool.templateSource === 'sole-ui-resource') {
+    warning.textContent = 'Widget inferred: this tool names none, and the server exposes exactly one.';
+  } else if (state.tool.securitySchemes && !state.tool.securitySchemes.some((s) => s.type === 'noauth')) {
     warning.textContent = 'This tool needs an authenticated session.';
   } else warning.textContent = '';
+
+  // Nothing to preview when the tool renders nothing.
+  $('preview-button').disabled = !state.tool?.template;
 
   renderToolFields();
 }
@@ -575,6 +640,7 @@ async function init() {
   applyTheme(state.theme);
 
   $('tool-form').addEventListener('submit', runTool);
+  $('preview-button').addEventListener('click', previewEmpty);
   $('server-select').addEventListener('change', (e) => selectServer(e.target.value));
   $('tool-select').addEventListener('change', (e) => selectTool(e.target.value));
 

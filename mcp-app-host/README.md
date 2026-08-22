@@ -84,8 +84,18 @@ tool._meta ────▶ detect.js ────────────┤   r
 Three things make it generic rather than two special cases welded together:
 
 **Widget resolution is metadata-driven.** `templateForTool()` reads whichever `_meta` key
-the server uses, falling back to the sole UI resource when a server declares exactly one.
-The fallback is reported as `sole-ui-resource` so you know it was a guess.
+the server uses, and — importantly — treats a *missing* key as information rather than as
+ignorance. A tool that participates in a template convention but names no widget has
+opted out, and is reported `declared-none`. The sole-UI-resource guess survives only for
+servers that use no per-tool convention at all, and is reported as `sole-ui-resource` so
+you can see it was a guess.
+
+That distinction is not academic. Viator's `get_experience_details` carries `_meta.ui`
+with a `visibility` but no `resourceUri`: it renders nothing itself and exists for an
+already-rendered app to call when someone opens a detail view. Falling back handed it the
+search-results widget, which then received a `{experienceDetails}` payload where it
+expects `{experiences: [...]}` — and because it sorted first alphabetically, it was what
+the UI defaulted to.
 
 **The argument form is generated from `inputSchema`.** Required fields first, optional
 ones behind a disclosure, types mapped to real widgets — dates get a date picker, enums
@@ -117,6 +127,21 @@ adapter says so rather than hiding it.
 | `viator` | mcp-apps | Tours and activities. No auth. |
 | `peloton` | skybridge | Class search. Only `search` is `noauth`. |
 | `deepwiki` | *none* | Data-only, included as the graceful-degradation case: the UI marks its tools "data only" rather than failing. |
+
+## Previewing an app with no data
+
+**Preview empty** mounts the widget and brings its bridge up, then sends no tool result.
+No tool is called at all.
+
+An app's empty state is a real design surface that is otherwise invisible from here —
+every other path through this host arrives with data already in hand. It is also the only
+way to see a widget belonging to a tool you cannot call, whether because it needs
+credentials or because its arguments are awkward to synthesise.
+
+What you get is the app's own rendering of "nothing yet", not a mock: Peloton draws its
+skeleton cards, Viator its loading placeholder. Nothing fabricated is ever handed to a
+widget. The button is disabled for tools that declare no widget, since there is nothing
+to render empty.
 
 ## Detecting server changes
 

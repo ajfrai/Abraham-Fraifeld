@@ -59,6 +59,34 @@ async function unitTests() {
     );
   });
 
+  // Regression: Viator's get_experience_details carries _meta.ui with a
+  // visibility but no resourceUri. Inheriting the server's only widget by
+  // fallback handed the search-results app a {experienceDetails} payload.
+  await check('templateForTool: a tool that declares no widget does not inherit one', () => {
+    const resources = [{ uri: 'ui://mcp/experiences', mimeType: 'text/html;profile=mcp-app' }];
+    const detail = { name: 'get_experience_details', _meta: { ui: { visibility: ['app', 'model'] } } };
+    const search = {
+      name: 'search_experiences',
+      _meta: { ui: { resourceUri: 'ui://mcp/experiences', visibility: ['app', 'model'] } },
+    };
+
+    // Declaring `ui` without a resourceUri is a statement, not a gap.
+    assert.deepStrictEqual(
+      templateForTool(detail, resources, [detail, search]),
+      { uri: null, source: 'declared-none' },
+    );
+    assert.strictEqual(templateForTool(search, resources, [detail, search]).uri, 'ui://mcp/experiences');
+
+    // Same conclusion from a sibling using the other standard's key.
+    const bare = { name: 'helper', _meta: {} };
+    const templated = { name: 'search', _meta: { 'openai/outputTemplate': 'ui://widget/s.html' } };
+    assert.strictEqual(templateForTool(bare, resources, [bare, templated]).source, 'declared-none');
+
+    // But with no convention in use anywhere, the sole-resource guess stands.
+    const lone = { name: 'only' };
+    assert.strictEqual(templateForTool(lone, resources, [lone]).source, 'sole-ui-resource');
+  });
+
   await check('buildCsp never emits \'self\' and merges both sources', () => {
     const csp = buildCsp({
       resourceMeta: { ui: { csp: { connectDomains: ['https://a.example'] } } },
@@ -188,6 +216,25 @@ async function main() {
   });
 
   // A server with no UI resources must degrade gracefully rather than error.
+  // The live counterpart to the unit test above: only search_experiences may
+  // render, so the UI cannot default to feeding a detail payload to the list.
+  await check('viator: only search_experiences resolves a widget', async () => {
+    const info = await (await fetch(`${base}/api/servers/viator/info`)).json();
+
+    const detail = info.tools.find((t) => t.name === 'get_experience_details');
+    assert.ok(detail, 'get_experience_details missing from the tool list');
+    assert.strictEqual(detail.template, null, `it resolved ${detail.template}`);
+    assert.strictEqual(detail.templateSource, 'declared-none');
+
+    const search = info.tools.find((t) => t.name === 'search_experiences');
+    assert.strictEqual(search.template, 'ui://mcp/experiences');
+    assert.strictEqual(search.templateSource, 'tool._meta');
+
+    // What the browser picks as its default tool.
+    const renderable = info.tools.filter((t) => t.template && t.standard);
+    assert.deepStrictEqual(renderable.map((t) => t.name), ['search_experiences']);
+  });
+
   await check('deepwiki: a data-only server reports no renderable tools', async () => {
     const res = await fetch(`${base}/api/servers/deepwiki/info`);
     assert.strictEqual(res.status, 200, `got ${res.status}`);

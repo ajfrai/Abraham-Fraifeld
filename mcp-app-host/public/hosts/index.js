@@ -41,6 +41,13 @@ class McpAppsAdapter {
     return this.host.whenReady();
   }
 
+  /**
+   * Nothing to do: this standard carries the host context in the reply to the
+   * app's own `ui/initialize`, so it has already arrived by the time the app
+   * reports itself initialized.
+   */
+  pushContext() {}
+
   deliver({ result, args }) {
     // Order is part of the contract: the arguments, then the result.
     this.host.sendToolInput(args);
@@ -81,8 +88,16 @@ class SkybridgeAdapter {
     return this.host.whenReady();
   }
 
-  deliver({ result, args }) {
+  /**
+   * Theme, locale and sizing arrive as globals rather than through a
+   * handshake, so they must be pushed explicitly — including when no tool
+   * result follows, which is how an empty widget still renders styled.
+   */
+  pushContext() {
     this.host.setGlobals(this.handlers.getContext());
+  }
+
+  deliver({ result, args }) {
     this.host.sendToolResponse(result, result.structuredContent ?? null, args);
   }
 

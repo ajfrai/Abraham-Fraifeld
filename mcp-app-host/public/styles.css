@@ -101,8 +101,14 @@ button { font: inherit; cursor: pointer; border-radius: 9px; transition: backgro
   padding: 6px 12px; background: var(--surface-2);
   color: var(--text); border: 1px solid var(--border); font-size: 13px;
 }
-.ghost:hover { border-color: var(--accent); }
+.ghost:hover:not(:disabled) { border-color: var(--accent); }
 .ghost.small { padding: 3px 9px; font-size: 12px; }
+.ghost:disabled { opacity: .45; cursor: default; }
+
+/* Run + preview sit side by side; run takes the space it needs. */
+.actions { display: flex; gap: 8px; align-items: stretch; margin-top: 4px; }
+.actions .primary { margin-top: 0; }
+.actions .ghost { white-space: nowrap; }
 
 .chip {
   padding: 4px 10px; border-radius: 999px; font-size: 12px;
