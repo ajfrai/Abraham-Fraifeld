@@ -1,0 +1,5 @@
+# intermediates (regenerate with ./run_pipeline.sh)
+work/
+# 16-bit TIFF masters are ~70 MB each; the JPEG proofs are tracked instead
+out/*.tif
+__pycache__/
