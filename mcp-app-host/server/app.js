@@ -17,10 +17,13 @@
 
 const fs = require('node:fs/promises');
 const path = require('node:path');
+const crypto = require('node:crypto');
 const { Registry, resolveDefaults } = require('./registry');
 const {
   STANDARDS, standardForMimeType, isUiResource, templateForTool, buildCsp, isSafeWidgetUri,
 } = require('./detect');
+const oauth = require('./oauth');
+const session = require('./session');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 
@@ -177,8 +180,8 @@ async function serveStatic(req, res, pathname) {
  * schemas, resolved widget URIs and the detected standard, and needs no
  * per-server knowledge of its own.
  */
-async function describeServer(entry) {
-  const client = registry.clientFor(entry.id);
+async function describeServer(entry, accessToken = null) {
+  const client = registry.clientFor(entry.id, accessToken);
   const info = await client.ready();
   const [toolsResult, resourcesResult] = await Promise.all([
     client.listTools(),
@@ -235,6 +238,162 @@ async function describeServer(entry) {
 }
 
 /* ------------------------------------------------------------------ *
+ * OAuth
+ * ------------------------------------------------------------------ */
+
+const redirectUriFor = (req, id) => `${session.originFor(req)}/api/servers/${id}/auth/callback`;
+
+/** Discovery is per-endpoint and stable; cache it so login is one hop faster. */
+const discoveryCache = new Map();
+async function discoverCached(endpoint) {
+  if (!discoveryCache.has(endpoint)) {
+    discoveryCache.set(endpoint, await oauth.discover(endpoint));
+  }
+  return discoveryCache.get(endpoint);
+}
+
+/**
+ * Returns a usable access token for this viewer, refreshing it if it has aged
+ * out. Returns null when the viewer has not authorized — callers then proceed
+ * anonymously, which is correct for the many tools marked `noauth`.
+ */
+async function tokenFor(req, res, entry) {
+  const stored = session.readToken(req, entry.id);
+  if (!stored?.accessToken) return null;
+  if (!oauth.isExpired(stored)) return stored.accessToken;
+
+  if (!stored.refreshToken) {
+    session.clearToken(req, res, entry.id);
+    return null;
+  }
+  try {
+    const meta = await discoverCached(entry.endpoint);
+    const next = await oauth.refreshToken(meta, {
+      clientId: stored.clientId,
+      clientSecret: stored.clientSecret,
+      refresh: stored.refreshToken,
+    });
+    session.writeToken(req, res, entry.id, { ...stored, ...next });
+    return next.accessToken;
+  } catch (err) {
+    console.warn(`[oauth] refresh failed for ${entry.id}: ${err.message}`);
+    session.clearToken(req, res, entry.id);
+    return null;
+  }
+}
+
+function redirect(res, location) {
+  res.writeHead(302, { Location: location, 'Cache-Control': 'no-store' });
+  res.end();
+}
+
+async function handleAuth(req, res, entry, action, url) {
+  /* --- status ---------------------------------------------------------- */
+  if (action === 'status' && req.method === 'GET') {
+    const stored = session.readToken(req, entry.id);
+    const meta = await discoverCached(entry.endpoint).catch(() => ({ supported: false }));
+    return sendJson(res, 200, {
+      id: entry.id,
+      oauthSupported: Boolean(meta.supported),
+      scopesSupported: meta.scopesSupported || [],
+      authenticated: Boolean(stored?.accessToken) && !oauth.isExpired(stored, 0),
+      expiresAt: stored?.expiresAt || null,
+      scope: stored?.scope || null,
+      // A bearer from the environment is a deployment-wide credential, not a
+      // per-viewer one; say which is in play so the UI does not imply a login.
+      staticToken: Boolean(entry.authEnv && process.env[entry.authEnv]),
+      stableSecret: session.hasStableSecret,
+    });
+  }
+
+  /* --- login ----------------------------------------------------------- */
+  if (action === 'login' && req.method === 'GET') {
+    const meta = await discoverCached(entry.endpoint);
+    if (!meta.supported) {
+      return sendJson(res, 400, { error: `${entry.id} does not publish OAuth metadata: ${meta.reason}` });
+    }
+
+    const redirectUri = redirectUriFor(req, entry.id);
+    const configured = entry.oauth || {};
+    const client = configured.clientId
+      ? { clientId: configured.clientId, clientSecret: configured.clientSecret || null }
+      : await oauth.registerClient(meta, redirectUri);
+
+    const { verifier, challenge } = oauth.createPkce();
+    const state = crypto.randomBytes(16).toString('base64url');
+
+    // Scope choice: whatever the server advertises, minus openid (we are not
+    // doing identity) — or an explicit list from the registry entry.
+    const scopes = configured.scopes
+      || (meta.scopesSupported || []).filter((s) => s !== 'openid');
+
+    session.writeLoginState(req, res, {
+      serverId: entry.id, state, verifier, redirectUri, ...client,
+    });
+
+    return redirect(res, oauth.buildAuthorizeUrl(meta, {
+      clientId: client.clientId,
+      redirectUri,
+      scopes,
+      state,
+      codeChallenge: challenge,
+    }));
+  }
+
+  /* --- callback -------------------------------------------------------- */
+  if (action === 'callback' && req.method === 'GET') {
+    const pending = session.readLoginState(req);
+    session.clearLoginState(req, res);
+
+    const error = url.searchParams.get('error');
+    if (error) {
+      return redirect(res, `/?auth=denied&server=${entry.id}&reason=${encodeURIComponent(error)}`);
+    }
+
+    const code = url.searchParams.get('code');
+    const state = url.searchParams.get('state');
+    if (!code || !pending || pending.serverId !== entry.id) {
+      return redirect(res, `/?auth=failed&server=${entry.id}&reason=missing-state`);
+    }
+    // Constant-time compare: `state` is the CSRF defence for this callback.
+    const ok = state && pending.state
+      && state.length === pending.state.length
+      && crypto.timingSafeEqual(Buffer.from(state), Buffer.from(pending.state));
+    if (!ok) {
+      return redirect(res, `/?auth=failed&server=${entry.id}&reason=state-mismatch`);
+    }
+
+    try {
+      const meta = await discoverCached(entry.endpoint);
+      const token = await oauth.exchangeCode(meta, {
+        clientId: pending.clientId,
+        clientSecret: pending.clientSecret,
+        code,
+        codeVerifier: pending.verifier,
+        redirectUri: pending.redirectUri,
+      });
+      // The client credentials are kept alongside the token so a refresh can
+      // reuse the same registration rather than registering again.
+      session.writeToken(req, res, entry.id, {
+        ...token, clientId: pending.clientId, clientSecret: pending.clientSecret,
+      });
+      return redirect(res, `/?auth=ok&server=${entry.id}`);
+    } catch (err) {
+      return redirect(res, `/?auth=failed&server=${entry.id}&reason=${encodeURIComponent(err.message.slice(0, 120))}`);
+    }
+  }
+
+  /* --- logout ---------------------------------------------------------- */
+  if (action === 'logout' && (req.method === 'POST' || req.method === 'GET')) {
+    session.clearToken(req, res, entry.id);
+    if (req.method === 'GET') return redirect(res, `/?auth=out&server=${entry.id}`);
+    return sendJson(res, 200, { ok: true });
+  }
+
+  return sendJson(res, 404, { error: `No auth route ${req.method} ${action}` });
+}
+
+/* ------------------------------------------------------------------ *
  * Routes
  * ------------------------------------------------------------------ */
 
@@ -246,11 +405,20 @@ async function handle(req, res) {
     return sendJson(res, 200, { servers: registry.list() });
   }
 
+  const auth = pathname.match(/^\/api\/servers\/([a-z0-9-]+)\/auth\/([a-z]+)$/);
+  if (auth) {
+    const entry = registry.get(auth[1]);
+    if (!entry) return sendJson(res, 404, { error: `No server "${auth[1]}"` });
+    return handleAuth(req, res, entry, auth[2], url);
+  }
+
   const described = pathname.match(/^\/api\/servers\/([a-z0-9-]+)\/info$/);
   if (described && req.method === 'GET') {
     const entry = registry.get(described[1]);
     if (!entry) return sendJson(res, 404, { error: `No server "${described[1]}"` });
-    return sendJson(res, 200, await describeServer(entry));
+    // Authorized viewers may see more tools than anonymous ones.
+    const token = await tokenFor(req, res, entry);
+    return sendJson(res, 200, await describeServer(entry, token));
   }
 
   const widget = pathname.match(/^\/api\/servers\/([a-z0-9-]+)\/widget$/);
@@ -299,7 +467,8 @@ async function handle(req, res) {
     if (!entry) return sendJson(res, 404, { error: `No server "${call[1]}"` });
 
     const body = await readBody(req);
-    const client = registry.clientFor(entry.id);
+    const token = await tokenFor(req, res, entry);
+    const client = registry.clientFor(entry.id, token);
 
     // The allowlist is the server's own tool list — nothing else is callable.
     const { tools } = await client.listTools();
@@ -314,8 +483,19 @@ async function handle(req, res) {
       const result = await client.callTool(body.name, body.arguments || {});
       return sendJson(res, 200, { result, elapsedMs: Date.now() - started });
     } catch (err) {
-      if (err.status === 401) registry.reset(entry.id);
-      return sendJson(res, err.status === 401 ? 401 : 502, { error: err.message, code: err.code });
+      if (err.status === 401) {
+        registry.reset(entry.id);
+        const meta = await discoverCached(entry.endpoint).catch(() => ({ supported: false }));
+        // Tell the browser where to send the user, rather than just failing.
+        return sendJson(res, 401, {
+          error: token
+            ? 'Your session was rejected. Sign in again.'
+            : 'This tool needs authorization.',
+          code: err.code,
+          authUrl: meta.supported ? `/api/servers/${entry.id}/auth/login` : null,
+        });
+      }
+      return sendJson(res, 502, { error: err.message, code: err.code });
     }
   }
 

@@ -128,6 +128,60 @@ adapter says so rather than hiding it.
 | `peloton` | skybridge | Class search. Only `search` is `noauth`. |
 | `deepwiki` | *none* | Data-only, included as the graceful-degradation case: the UI marks its tools "data only" rather than failing. |
 
+## Signing in (OAuth)
+
+Servers that guard their tools get a **Connect** button. The flow is fully
+self-service — no credentials are arranged in advance:
+
+```
+/.well-known/oauth-protected-resource   which authorization server guards this endpoint
+/.well-known/oauth-authorization-server  its endpoints and capabilities
+POST {registration_endpoint}             register this host, get a client_id (RFC 7591)
+{authorization_endpoint}                 you approve in your browser (PKCE S256)
+POST {token_endpoint}                    code + verifier -> access token
+```
+
+That is what makes it work for a server nobody has registered with before. Peloton's
+member tools are the live case: `search` is `noauth`, but `schedule` writes to your
+calendar and needs your account.
+
+**Tokens live in a sealed cookie, never on the server.** Two reasons, both load-bearing:
+serverless has no durable filesystem, so a server-side store would silently lose tokens
+on every cold start; and this deployment is public, so a shared store would mean whoever
+authorized last was lending their Peloton account to every other visitor. A cookie is
+per-browser by construction. It is AES-256-GCM sealed, so it is opaque and tamper-evident
+to the browser holding it, and `state` plus PKCE guard the callback.
+
+Set `MCP_HOST_SECRET` to keep sessions alive across restarts and across serverless
+instances. Without it a random key is generated per process, and existing cookies simply
+stop opening — safe, but you will be asked to sign in again.
+
+A server that needs a bearer you already hold can still use `authEnv` instead. That is a
+deployment-wide credential rather than a per-viewer one, and the UI says so rather than
+implying you signed in.
+
+Worth knowing: **not every server reports "sign in" as HTTP 401.** Peloton's `schedule`
+returns it as a tool error inside a 200, so the offer to authorize keys off the message
+as well as the status code.
+
+## Chained tools
+
+Many servers pair a list tool with ones that take an identifier *from* that list.
+Peloton's `fetch`, `create-training-plan` and `schedule` all want an `index` "from search
+results", and the indices are sparse — `2, 22, 38, 50…` — so a bare number box is
+unusable: there is no way to know what is valid without having run a search and read the
+output.
+
+So the last result's rows are kept, and any argument whose name matches a column in those
+rows is offered as a real choice, labelled from the row (`8 — 30 min Yoga Flow · Aditi
+Shah`). Array-of-object arguments start from a working example built off the schema and
+filled with indices that actually exist, rather than an empty `[]` and a guess at the item
+shape. Field descriptions are shown in full, since for these tools the description *is*
+the answer to "what goes here".
+
+The rule needs no knowledge of any particular server — only that the previous result had
+rows carrying a field of the same name.
+
 ## Previewing an app with no data
 
 **Preview empty** mounts the widget and brings its bridge up, then sends no tool result.

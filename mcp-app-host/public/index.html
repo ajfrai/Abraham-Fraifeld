@@ -38,6 +38,11 @@
       </label>
       <p class="hint" id="server-notes"></p>
       <dl class="kv" id="server-details"></dl>
+      <div class="auth-row" id="auth-row" hidden>
+        <span class="auth-state" id="auth-state"></span>
+        <a class="ghost small" id="auth-login" href="#">Connect</a>
+        <button type="button" class="ghost small" id="auth-logout" hidden>Sign out</button>
+      </div>
     </section>
 
     <form id="tool-form" class="panel">
@@ -47,6 +52,7 @@
         <select id="tool-select"></select>
       </label>
       <p class="hint" id="tool-description"></p>
+      <p class="hint carry" id="carry-hint" hidden></p>
 
       <!-- Fields are generated from the tool's inputSchema. -->
       <div id="tool-fields"></div>

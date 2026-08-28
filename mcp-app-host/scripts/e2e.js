@@ -154,6 +154,56 @@ async function main() {
     });
   }
 
+  // Peloton's fetch/create-training-plan/schedule all take an `index` "from
+  // search results", and those indices are sparse. Without help, the form is
+  // a bare number box with no way to know what is valid.
+  await check('peloton: a prior result feeds the chained tools\' arguments', async () => {
+    await page.selectOption('#server-select', 'peloton');
+    await page.waitForFunction(() => document.getElementById('status-text').textContent === 'Connected', null, { timeout: 45000 });
+
+    await page.selectOption('#tool-select', 'search');
+    await page.waitForTimeout(300);
+    await page.click('#run-button');
+    await page.waitForFunction(() => document.getElementById('placeholder').hidden, null, { timeout: 60000 });
+    await page.waitForTimeout(2000);
+
+    await page.selectOption('#tool-select', 'fetch');
+    await page.waitForTimeout(500);
+
+    assert.strictEqual(await page.isVisible('#carry-hint'), true, 'no carry-forward hint shown');
+    const options = await page.$$eval('#list-index option', (els) => els.map((o) => ({ v: o.value, l: o.label || o.textContent })));
+    assert.ok(options.length > 0, 'index offered no choices from the previous result');
+    assert.match(options[0].l, /\d+ — \S/, `option was not labelled: ${options[0].l}`);
+    assert.ok((await page.inputValue('#arg-index')).length > 0, 'index was left empty');
+
+    // Array-of-object arguments start from a valid example, not an empty box.
+    await page.selectOption('#tool-select', 'schedule');
+    await page.waitForTimeout(500);
+    const seeded = JSON.parse(await page.inputValue('#arg-classes'));
+    assert.ok(Array.isArray(seeded) && seeded.length > 0, 'classes was not seeded');
+    for (const item of seeded) {
+      assert.ok(Number.isInteger(item.index), `index missing from ${JSON.stringify(item)}`);
+      assert.ok(!Number.isNaN(Date.parse(item.startTime)), `startTime unparseable: ${item.startTime}`);
+    }
+    // The indices must be real ones from the search, not invented.
+    const offered = options.map((o) => Number(o.v));
+    assert.ok(offered.includes(seeded[0].index), `seeded index ${seeded[0].index} was not in ${offered.slice(0, 5)}`);
+  });
+
+  await check('schema descriptions are shown in full', async () => {
+    await page.selectOption('#tool-select', 'fetch');
+    await page.waitForTimeout(400);
+    const desc = await page.textContent('#tool-fields .field-desc');
+    assert.match(desc, /Class index from search results/, `description was ${desc}`);
+  });
+
+  await check('a server needing OAuth offers a way to connect', async () => {
+    const row = await page.isVisible('#auth-row');
+    assert.strictEqual(row, true, 'no auth row for a server that supports OAuth');
+    assert.match(await page.textContent('#auth-state'), /Not signed in/);
+    assert.match(await page.getAttribute('#auth-login', 'href'), /\/auth\/login$/);
+  });
+
   await check('a tool with no widget cannot be previewed', async () => {
     await page.selectOption('#server-select', 'viator');
     await page.waitForFunction(() => document.getElementById('status-text').textContent === 'Connected', null, { timeout: 45000 });

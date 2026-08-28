@@ -245,6 +245,47 @@ async function main() {
     assert.ok(info.tools.every((t) => !t.template), 'a tool resolved a widget');
   });
 
+  /* --- OAuth ---------------------------------------------------------- */
+
+  await check('auth/status reports real OAuth capability per server', async () => {
+    const peloton = await (await fetch(`${base}/api/servers/peloton/auth/status`)).json();
+    assert.strictEqual(peloton.oauthSupported, true, 'peloton should advertise OAuth');
+    assert.ok(peloton.scopesSupported.includes('offline_access'), `scopes were ${peloton.scopesSupported}`);
+    assert.strictEqual(peloton.authenticated, false, 'no cookie was sent, so nobody is signed in');
+
+    // Viator publishes no OAuth metadata; that must be reported, not guessed.
+    const viator = await (await fetch(`${base}/api/servers/viator/auth/status`)).json();
+    assert.strictEqual(viator.oauthSupported, false);
+  });
+
+  await check('auth/login refuses a server with no OAuth metadata', async () => {
+    const res = await fetch(`${base}/api/servers/viator/auth/login`, { redirect: 'manual' });
+    assert.strictEqual(res.status, 400, `got ${res.status}`);
+  });
+
+  await check('auth/callback rejects a missing or mismatched state (CSRF)', async () => {
+    // No state cookie at all.
+    const bare = await fetch(`${base}/api/servers/peloton/auth/callback?code=x&state=y`, { redirect: 'manual' });
+    assert.strictEqual(bare.status, 302);
+    assert.match(bare.headers.get('location'), /auth=failed.*missing-state/);
+
+    // A provider-side refusal is surfaced rather than swallowed.
+    const denied = await fetch(`${base}/api/servers/peloton/auth/callback?error=access_denied`, { redirect: 'manual' });
+    assert.match(denied.headers.get('location'), /auth=denied/);
+  });
+
+  await check('sealed session cookies are tamper-evident', async () => {
+    const { seal, unseal } = require('../server/session');
+    const sealed = seal({ accessToken: 'secret', scope: 'a' });
+    assert.deepStrictEqual(unseal(sealed).accessToken, 'secret');
+    assert.ok(!sealed.includes('secret'), 'the token appears in the cookie in clear text');
+
+    // Flipping any byte of the ciphertext must fail the GCM tag, not decode.
+    const bytes = Buffer.from(sealed, 'base64url');
+    bytes[bytes.length - 1] ^= 0xff;
+    assert.strictEqual(unseal(bytes.toString('base64url')), null, 'a tampered cookie was accepted');
+  });
+
   await check('unknown servers and routes 404', async () => {
     assert.strictEqual((await fetch(`${base}/api/servers/nope/info`)).status, 404);
     assert.strictEqual((await fetch(`${base}/api/nope`)).status, 404);

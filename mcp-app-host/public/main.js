@@ -11,6 +11,8 @@ const state = {
   theme: matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
   displayMode: 'inline',
   lastMount: null,
+  lastRows: [],       // rows from the most recent result, for chained tools
+  lastRowsTool: null,
   logEntries: [],
   filters: new Set(['host→app', 'app→host', 'host→server']),
 };
@@ -92,6 +94,8 @@ async function callTool(name, args) {
   if (!res.ok) {
     const err = new Error(body.error || `HTTP ${res.status}`);
     err.status = res.status;
+    // The server tells us where to send the user when a tool needs consent.
+    err.authUrl = body.authUrl || null;
     throw err;
   }
   addLog({ direction: 'host→server', at: Date.now(), note: `result ${name} (${body.elapsedMs}ms)`, payload: body.result });
@@ -272,6 +276,27 @@ function openLink(url) {
   showLinkToast(parsed.href);
 }
 
+/** A transient message for things that happened on another page load. */
+function showBanner(text, kind = 'ok') {
+  document.getElementById('link-toast')?.remove();
+  const toast = document.createElement('div');
+  toast.id = 'link-toast';
+  toast.className = `toast toast-${kind}`;
+
+  const label = document.createElement('span');
+  label.textContent = text;
+  const dismiss = document.createElement('button');
+  dismiss.type = 'button';
+  dismiss.className = 'toast-close';
+  dismiss.setAttribute('aria-label', 'Dismiss');
+  dismiss.textContent = '×';
+  dismiss.addEventListener('click', () => toast.remove());
+
+  toast.append(label, dismiss);
+  document.body.append(toast);
+  setTimeout(() => toast.remove(), 8000);
+}
+
 /** Popups from inside the sandboxed frame are blocked; offer a real link. */
 function showLinkToast(href) {
   document.getElementById('link-toast')?.remove();
@@ -312,6 +337,111 @@ function firstStringField() {
   return required.find((k) => (props[k]?.type ?? 'string') === 'string') || Object.keys(props)[0];
 }
 
+/* ------------------------------------------------------------------ *
+ * Carrying results forward
+ *
+ * Many servers chain their tools: one returns a list, the rest take an
+ * identifier "from the search results". Peloton's `fetch`, `create-training-
+ * plan` and `schedule` all want an `index`, and the indices are sparse
+ * (2, 22, 38, …) — unguessable, and useless to present as a bare number box.
+ *
+ * So the last result's rows are kept, and any argument whose name matches a
+ * column in those rows is offered as a real choice. That rule is generic: it
+ * needs no knowledge of Peloton, only that the previous result had rows with a
+ * field of the same name.
+ * ------------------------------------------------------------------ */
+
+/** Finds the first array of objects in a result — the "rows" of most payloads. */
+function rowsFromResult(result) {
+  const structured = result?.structuredContent;
+  if (!structured || typeof structured !== 'object') return [];
+  for (const value of Object.values(structured)) {
+    if (Array.isArray(value) && value.length && typeof value[0] === 'object' && value[0] !== null) {
+      return value;
+    }
+  }
+  return [];
+}
+
+/** A human label for a row, for the picker. */
+function rowLabel(row, valueKey) {
+  const text = row.title || row.name || row.label || row.slug || '';
+  const extra = row.instructor || row.discipline || '';
+  const suffix = [text, extra].filter(Boolean).join(' · ');
+  return suffix ? `${row[valueKey]} — ${suffix}`.slice(0, 90) : String(row[valueKey]);
+}
+
+/** Column names available from the last result, for matching against arguments. */
+function rowColumns() {
+  const [first] = state.lastRows || [];
+  return first ? Object.keys(first) : [];
+}
+
+/**
+ * Builds a minimal valid example for a schema, borrowing real values from the
+ * last result where a property name matches one of its columns.
+ *
+ * This is what makes `plan` and `classes` approachable: instead of an empty
+ * `[]` and a guess about the item shape, the box starts with a working example
+ * carrying indices that actually exist.
+ */
+function exampleForSchema(spec, depth = 0) {
+  const rows = state.lastRows || [];
+
+  if (spec.type === 'array') {
+    const item = spec.items || {};
+    // One row per available result, capped — enough to show the shape.
+    const wanted = Math.max(spec.minItems || 1, 1);
+    const count = Math.min(Math.max(wanted, rows.length ? 2 : 1), spec.maxItems || 3, 3);
+    return Array.from({ length: count }, (_, i) => exampleForObject(item, i, depth + 1));
+  }
+  if (spec.type === 'object') return exampleForObject(spec, 0, depth + 1);
+  return exampleScalar('value', spec, 0);
+}
+
+function exampleForObject(spec, i, depth) {
+  const props = spec.properties || {};
+  const required = new Set(spec.required || []);
+  const columns = rowColumns();
+  const out = {};
+
+  for (const [name, sub] of Object.entries(props)) {
+    // Include required fields, plus anything the previous result can fill.
+    const fillable = columns.includes(name);
+    if (!required.has(name) && !fillable) continue;
+    if (sub.type === 'object' || sub.type === 'array') {
+      if (depth < 2) out[name] = exampleForSchema(sub, depth);
+      continue;
+    }
+    out[name] = exampleScalar(name, sub, i);
+  }
+  return out;
+}
+
+function exampleScalar(name, spec, i) {
+  const rows = state.lastRows || [];
+  const row = rows[i % Math.max(rows.length, 1)];
+
+  // A real value from the last result always beats a synthesised one.
+  if (row && row[name] !== undefined && typeof row[name] !== 'object') return row[name];
+
+  if (spec.enum?.length) return spec.enum[0];
+  if (spec.default !== undefined) return spec.default;
+  if (spec.type === 'boolean') return false;
+  if (spec.type === 'integer' || spec.type === 'number') return spec.minimum ?? 0;
+
+  const day = new Date(Date.now() + (i + 1) * 864e5);
+  const text = `${name} ${spec.description || ''}`.toLowerCase();
+  if (/iso 8601|date-?time|starttime/.test(text) || spec.format === 'date-time') {
+    day.setUTCHours(12, 0, 0, 0);
+    return day.toISOString();
+  }
+  if (/iso date|yyyy-mm-dd|\bdate\b/.test(text) || spec.format === 'date') {
+    return day.toISOString().slice(0, 10);
+  }
+  return '';
+}
+
 function renderToolFields() {
   const container = $('tool-fields');
   container.replaceChildren();
@@ -321,6 +451,21 @@ function renderToolFields() {
   const props = schema.properties || {};
   const required = new Set(schema.required || []);
   const defaults = state.tool.defaults || {};
+
+  // Say where the offered values came from, so the pickers are not magic.
+  const columns = rowColumns();
+  const linked = Object.keys(props).filter((n) => columns.includes(n));
+  const carry = $('carry-hint');
+  if (state.lastRows?.length && linked.length) {
+    carry.hidden = false;
+    carry.textContent = `${state.lastRows.length} row(s) from ${state.lastRowsTool} — `
+      + `${linked.join(', ')} ${linked.length === 1 ? 'is' : 'are'} offered below.`;
+  } else if (state.lastRows?.length) {
+    carry.hidden = false;
+    carry.textContent = `${state.lastRows.length} row(s) from ${state.lastRowsTool} available.`;
+  } else {
+    carry.hidden = true;
+  }
 
   // Required first, then the rest — long optional tails stay out of the way.
   const names = Object.keys(props).sort((a, b) => Number(required.has(b)) - Number(required.has(a)));
@@ -350,11 +495,15 @@ function buildField(name, spec, isRequired, defaultValue) {
 
   const caption = document.createElement('span');
   caption.textContent = isRequired ? `${name} *` : name;
-  if (spec.description) caption.title = spec.description;
   label.append(caption);
 
   let input;
+  let seeded;
   const enumValues = spec.enum || spec.items?.enum;
+  // Does the previous result carry a column of this name to choose from?
+  const choices = rowColumns().includes(name)
+    ? state.lastRows.filter((r) => r[name] !== undefined && typeof r[name] !== 'object')
+    : [];
 
   if (enumValues) {
     input = document.createElement('select');
@@ -363,6 +512,19 @@ function buildField(name, spec, isRequired, defaultValue) {
   } else if (spec.type === 'boolean') {
     input = document.createElement('select');
     input.append(new Option('—', ''), new Option('true', 'true'), new Option('false', 'false'));
+  } else if (choices.length) {
+    // A datalist, not a select: pick a real value, or type one anyway.
+    input = document.createElement('input');
+    input.type = spec.type === 'integer' || spec.type === 'number' ? 'number' : 'text';
+    input.setAttribute('list', `list-${name}`);
+    const list = document.createElement('datalist');
+    list.id = `list-${name}`;
+    for (const row of choices.slice(0, 50)) {
+      const option = new Option(rowLabel(row, name), String(row[name]));
+      list.append(option);
+    }
+    label.append(list);
+    seeded = String(choices[0][name]);
   } else if (spec.type === 'integer' || spec.type === 'number') {
     input = document.createElement('input');
     input.type = 'number';
@@ -370,10 +532,14 @@ function buildField(name, spec, isRequired, defaultValue) {
     if (spec.maximum !== undefined) input.max = spec.maximum;
     if (spec.type === 'integer') input.step = '1';
   } else if (spec.type === 'array' || spec.type === 'object') {
-    // No sensible widget for these; take JSON and validate on submit.
+    // JSON, but never a blank box: start from a valid example built off the
+    // schema and, where possible, real values from the last result.
     input = document.createElement('textarea');
-    input.rows = 3;
+    input.rows = spec.type === 'array' ? 6 : 4;
     input.placeholder = spec.type === 'array' ? '[]' : '{}';
+    try {
+      seeded = JSON.stringify(exampleForSchema(spec), null, 2);
+    } catch { /* fall back to the empty placeholder */ }
   } else {
     const isLong = /term|query|search|prompt|description/i.test(name);
     input = document.createElement(isLong ? 'textarea' : 'input');
@@ -386,11 +552,29 @@ function buildField(name, spec, isRequired, defaultValue) {
   input.id = `arg-${name}`;
   input.name = name;
   input.dataset.type = spec.type || 'string';
-  if (defaultValue !== undefined && defaultValue !== null) input.value = String(defaultValue);
   if (isRequired) input.required = true;
-  if (spec.description && !input.placeholder) input.placeholder = spec.description.slice(0, 60);
+
+  // A registry default wins; otherwise the synthesised example fills the gap.
+  if (defaultValue !== undefined && defaultValue !== null) {
+    input.value = typeof defaultValue === 'object'
+      ? JSON.stringify(defaultValue, null, 2)
+      : String(defaultValue);
+  } else if (seeded !== undefined) {
+    input.value = seeded;
+  }
 
   label.append(input);
+
+  // The description is the only place a schema explains itself — Peloton's
+  // "Class index from search results" is the whole answer to "what goes here".
+  // Truncating it into a placeholder threw that away.
+  if (spec.description) {
+    const help = document.createElement('small');
+    help.className = 'field-desc';
+    help.textContent = spec.description;
+    label.append(help);
+  }
+
   return label;
 }
 
@@ -454,8 +638,23 @@ async function runTool(event) {
   try {
     const result = await callTool(state.tool.name, args);
 
+    // Remember the rows so a chained tool can offer their identifiers.
+    const rows = rowsFromResult(result);
+    if (rows.length) {
+      state.lastRows = rows;
+      state.lastRowsTool = state.tool.name;
+    }
+
     if (result.isError) {
       const text = result.content?.find((c) => c.type === 'text')?.text;
+      // Not every server signals "you need to sign in" with HTTP 401. Peloton's
+      // `schedule` returns it as a tool error inside a 200, so the offer to
+      // authorize has to key off the message as well as the status code.
+      const looksLikeAuth = /auth|unauthor|token|sign[ -]?in|credential|401/i.test(text || '');
+      if (looksLikeAuth && state.auth?.oauthSupported && !state.auth?.authenticated) {
+        showAuthPrompt(`/api/servers/${state.server.id}/auth/login`, text);
+        return;
+      }
       showPlaceholder({ title: 'The tool reported an error', text: text || 'No detail was given.' });
       return;
     }
@@ -472,14 +671,30 @@ async function runTool(event) {
     await mount({ tool: state.tool, result, args });
   } catch (err) {
     console.error(err);
-    showPlaceholder({
-      title: err.status === 401 ? 'This tool needs authentication' : 'Something went wrong',
-      text: String(err.message || err),
-    });
+    if (err.status === 401 && err.authUrl) {
+      showAuthPrompt(err.authUrl, err.message);
+    } else {
+      showPlaceholder({
+        title: err.status === 401 ? 'This tool needs authentication' : 'Something went wrong',
+        text: String(err.message || err),
+      });
+    }
   } finally {
     button.disabled = false;
     button.textContent = 'Run tool';
   }
+}
+
+/** A 401 with a known authorize URL is an invitation, not a dead end. */
+function showAuthPrompt(authUrl, message) {
+  showPlaceholder({ title: 'Authorization needed', text: message || 'This tool needs your account.' });
+
+  const inner = document.querySelector('.placeholder-inner');
+  const link = document.createElement('a');
+  link.className = 'primary auth-cta';
+  link.href = authUrl;
+  link.textContent = `Connect ${state.server.label}`;
+  inner.append(link);
 }
 
 /**
@@ -551,11 +766,64 @@ function selectTool(name) {
   renderToolFields();
 }
 
+/**
+ * Reflects this viewer's OAuth state for a server.
+ *
+ * Authorization is per-browser, held in a sealed cookie, so this is genuinely
+ * "are *you* signed in" — not a property of the deployment.
+ */
+async function refreshAuth(id) {
+  const row = $('auth-row');
+  try {
+    const res = await fetch(`/api/servers/${id}/auth/status`);
+    const auth = await res.json();
+    if (!res.ok) throw new Error(auth.error || `HTTP ${res.status}`);
+
+    state.auth = auth;
+
+    if (auth.staticToken) {
+      // A bearer from the environment belongs to the deployment, not to you.
+      row.hidden = false;
+      $('auth-state').textContent = 'Using a server-configured token';
+      $('auth-login').hidden = true;
+      $('auth-logout').hidden = true;
+      return auth;
+    }
+    if (!auth.oauthSupported) {
+      row.hidden = true;
+      return auth;
+    }
+
+    row.hidden = false;
+    $('auth-login').href = `/api/servers/${id}/auth/login`;
+    if (auth.authenticated) {
+      const until = auth.expiresAt ? ` · expires ${new Date(auth.expiresAt).toLocaleTimeString()}` : '';
+      $('auth-state').textContent = `Signed in${until}`;
+      $('auth-login').hidden = true;
+      $('auth-logout').hidden = false;
+    } else {
+      $('auth-state').textContent = 'Not signed in';
+      $('auth-login').hidden = false;
+      $('auth-login').textContent = 'Connect';
+      $('auth-logout').hidden = true;
+    }
+    return auth;
+  } catch {
+    row.hidden = true;
+    return null;
+  }
+}
+
 async function selectServer(id) {
   teardown();
   state.lastMount = null;
+  // Rows belong to the server they came from; carrying them across would
+  // offer identifiers that mean nothing to the new one.
+  state.lastRows = [];
+  state.lastRowsTool = null;
   setStatus('pending', 'Connecting');
   showPlaceholder({ title: 'Connecting…', text: id, busy: true });
+  refreshAuth(id);
 
   try {
     const res = await fetch(`/api/servers/${id}/info`);
@@ -641,6 +909,29 @@ async function init() {
 
   $('tool-form').addEventListener('submit', runTool);
   $('preview-button').addEventListener('click', previewEmpty);
+
+  $('auth-logout').addEventListener('click', async () => {
+    await fetch(`/api/servers/${state.server.id}/auth/logout`, { method: 'POST' });
+    await refreshAuth(state.server.id);
+    await selectServer(state.server.id);
+  });
+
+  // The OAuth callback lands back here with the outcome in the query string.
+  const params = new URLSearchParams(location.search);
+  const outcome = params.get('auth');
+  if (outcome) {
+    const server = params.get('server');
+    const reason = params.get('reason');
+    const message = {
+      ok: `Connected to ${server}.`,
+      denied: `Authorization was declined${reason ? ` (${reason})` : ''}.`,
+      failed: `Authorization failed${reason ? `: ${reason}` : ''}.`,
+      out: `Signed out of ${server}.`,
+    }[outcome];
+    if (message) showBanner(message, outcome === 'ok' || outcome === 'out' ? 'ok' : 'bad');
+    // Keep the URL clean so a refresh does not replay the banner.
+    history.replaceState({}, '', location.pathname);
+  }
   $('server-select').addEventListener('change', (e) => selectServer(e.target.value));
   $('tool-select').addEventListener('change', (e) => selectTool(e.target.value));
 

@@ -63,9 +63,21 @@ resource server and names its auth server.
 node scripts/probe.js <endpoint> --save --id <id> --label "<Label>"
 ```
 
-For a server needing auth, add `--auth-env MY_TOKEN`. Tokens are **never** written to
-`servers.json` — the entry stores the variable's name and the value is read from the
-environment at startup.
+**For a server that needs a login, usually nothing extra is required.** If it publishes
+`/.well-known/oauth-protected-resource`, the host discovers its authorization server,
+registers itself dynamically (RFC 7591) and runs the PKCE flow — a **Connect** button
+appears on its own. Check with:
+
+```bash
+curl -s https://<host>/.well-known/oauth-protected-resource
+```
+
+Only two cases need registry entries. A server with **no** dynamic registration endpoint
+needs a pre-arranged client: `"oauth": { "clientId": "…", "scopes": ["…"] }`. A server
+authenticated by a bearer you already hold uses `--auth-env MY_TOKEN` instead — that is a
+deployment-wide credential, not a per-viewer login, so prefer OAuth where it exists.
+Tokens are **never** written to `servers.json`: `authEnv` stores the variable's name and
+the value is read from the environment.
 
 Then add `defaults` for the tools you want one-click runnable. Some servers reject calls
 without a session id or a concrete date, so these tokens are resolved per request:
@@ -171,7 +183,10 @@ that case — only turn it off for deployments where every registered server is 
 | Frame stuck at 620px | The app never reported a height. For skybridge, the shim measures `document.body` — never `documentElement`, which is clamped to the iframe viewport and reports back whatever the host just set. |
 | Theme ignored | Skybridge reads it at boot; make sure the theme reaches `/widget?theme=` and that the toggle remounts. |
 | Click-out does nothing | Popups are blocked: the gesture happened in the sandboxed frame, so the top document has no user activation. The host falls back to a toast — confirm it appears. |
-| 401 on a tool call | That tool is not `noauth`. Set `authEnv` and export a token. |
+| 401 on a tool call | That tool is not `noauth`. Use **Connect** if the server publishes OAuth metadata; otherwise set `authEnv`. |
+| Tool errors with "authentication required" inside a 200 | Some servers report auth failure as a tool error, not HTTP 401 (Peloton's `schedule` does). Expected — the Connect prompt keys off the message too. |
+| Signed in, then signed out again after a restart | `MCP_HOST_SECRET` is unset, so the cookie-sealing key was regenerated. Set it. |
+| An argument wants an id you cannot guess | Run the server's list tool first. Its rows are carried forward, and any argument matching a column is then offered as a labelled choice. |
 | `Unsupported widget type` | A third standard. Report it; do not force it into an existing adapter. |
 
 ## Rules

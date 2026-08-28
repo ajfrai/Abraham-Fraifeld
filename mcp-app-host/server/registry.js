@@ -75,15 +75,28 @@ class Registry {
     return this.servers.get(id) || null;
   }
 
-  /** Clients are memoised so the initialize handshake happens once per server. */
-  clientFor(id) {
+  /**
+   * A client for this server, optionally carrying a viewer's OAuth token.
+   *
+   * The anonymous client is memoised, so the handshake happens once. A
+   * token-bearing client deliberately is *not*: it belongs to one viewer's
+   * request, and caching it by server id would hand the next visitor someone
+   * else's credentials. The cost is one extra initialize per authenticated
+   * call, which is the right trade.
+   */
+  clientFor(id, accessToken = null) {
     const entry = this.get(id);
     if (!entry) return null;
+
+    const headers = {};
+    if (entry.authEnv && process.env[entry.authEnv]) {
+      headers.Authorization = `Bearer ${process.env[entry.authEnv]}`;
+    }
+    if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+
+    if (accessToken) return new McpClient({ endpoint: entry.endpoint, headers });
+
     if (!this.clients.has(id)) {
-      const headers = {};
-      if (entry.authEnv && process.env[entry.authEnv]) {
-        headers.Authorization = `Bearer ${process.env[entry.authEnv]}`;
-      }
       this.clients.set(id, new McpClient({ endpoint: entry.endpoint, headers }));
     }
     return this.clients.get(id);
