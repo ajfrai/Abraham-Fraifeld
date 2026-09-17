@@ -4,3 +4,5 @@ data/raw/
 results/*
 !results/sample-mock-report.txt
 .pytest_cache/
+web-dist/
+.vercel/

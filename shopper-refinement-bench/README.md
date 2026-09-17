@@ -168,6 +168,35 @@ argv list, never through a shell. That layer has its own tests.
 
 ---
 
+## Publishing the leaderboard
+
+Live: **https://shopper-refinement-bench.vercel.app**
+
+```bash
+python -m srb.publish --out web-dist --note "optional caveat line"
+cd web-dist && vercel deploy --prod
+```
+
+This snapshots whatever is in `results/` into a self-contained directory of static files
+(`index.html`, `app.js`, `styles.css`, `leaderboard.json`, `runs.json`) and serves the
+same dashboard in read-only mode: the Run and Jobs tabs are removed and the page reads a
+baked JSON file instead of the API. Re-run the two commands to update the published
+snapshot. `runs.json` ships alongside it so the page is not the only copy of the numbers.
+
+**The admin panel is not deployed, and cannot be.** Serverless invocations are killed in
+seconds while an eval takes minutes; the runner is a subprocess that has to outlive its
+HTTP response; and results are written to a filesystem that does not persist between
+invocations. Publishing it would also put an unauthenticated endpoint that spends your API
+budget on the open internet. The split is deliberate: **runs happen locally, results are
+published.** The publisher has a test asserting that no Python file reaches the output
+directory.
+
+If you ever do want the runner reachable remotely, it needs a host that allows
+long-running processes and persistent disk (Fly, Render, a VM) plus real authentication in
+front of it — not a serverless platform.
+
+---
+
 ## Metrics
 
 | Metric | What it catches |
@@ -218,9 +247,10 @@ srb/providers.py      anthropic / openai / deterministic mock
 srb/metrics.py        TVD, JSD, bootstrap CI, the four baselines
 srb/run_eval.py       runner with disk cache and concurrency
 srb/report.py         console report
-srb/server.py         leaderboard + admin panel (FastAPI)
+srb/server.py         leaderboard + admin panel (FastAPI, local only)
+srb/publish.py        static read-only build for hosting
 srb/web/              dashboard front end, no build step
-tests/                98 pytest tests
+tests/                105 pytest tests
 ```
 
 ```bash

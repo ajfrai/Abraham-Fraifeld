@@ -21,7 +21,19 @@ const fmt = (v, p = 3) => (v === null || v === undefined || Number.isNaN(v) ? "�
 const pct = (v) => (v === null || v === undefined || Number.isNaN(v) ? "—" : (v * 100).toFixed(1) + "%");
 const signed = (v, p = 3) => (v === null || v === undefined || Number.isNaN(v) ? "—" : (v >= 0 ? "+" : "") + v.toFixed(p));
 
+/* In static mode the page is a published snapshot: it reads a baked JSON file and the
+   Run/Jobs tabs do not exist, because no runner is reachable from a static host. */
+const STATIC = Boolean(window.SRB_STATIC);
+
 async function api(path, options) {
+  if (STATIC) {
+    if (path === "/api/leaderboard") {
+      const res = await fetch("leaderboard.json");
+      if (!res.ok) throw new Error("could not load leaderboard.json");
+      return res.json();
+    }
+    throw new Error("this is a read-only published snapshot");
+  }
   const res = await fetch(path, options);
   if (!res.ok) {
     let detail = res.statusText;
@@ -94,7 +106,16 @@ async function loadLeaderboard() {
     return tr;
   });
 
-  body.replaceChildren(el("table", {}, el("thead", {}, head), el("tbody", {}, rows)));
+  const provenance = STATIC
+    ? el("p", { class: "note", style: "margin:12px 0 0" },
+        `Read-only snapshot of ${data.n_runs} runs, generated ${
+          data.generated ? new Date(data.generated).toUTCString() : "unknown"
+        }. ` + (data.note ? data.note + " " : "") +
+        "Evaluations run locally; this page is published from their results.")
+    : null;
+  body.replaceChildren(
+    el("table", {}, el("thead", {}, head), el("tbody", {}, rows)),
+    provenance || el("span", {}));
   if (!selectedModel || !data.rows.some((r) => r.model === selectedModel)) {
     selectedModel = data.rows[0].model;
     body.querySelector("tbody tr").classList.add("selected");
@@ -411,7 +432,14 @@ async function loadJobs() {
 }
 
 /* ------------------------------------------------------------------ boot */
-loadConfig().catch((err) => {
-  $("#key-status").replaceChildren(el("div", { class: "err" }, err.message));
-});
-loadLeaderboard();
+if (STATIC) {
+  document.querySelectorAll('nav button[data-tab="run"], nav button[data-tab="jobs"]')
+    .forEach((b) => b.remove());
+  document.querySelectorAll("#tab-run, #tab-jobs").forEach((p) => p.remove());
+  loadLeaderboard();
+} else {
+  loadConfig().catch((err) => {
+    $("#key-status").replaceChildren(el("div", { class: "err" }, err.message));
+  });
+  loadLeaderboard();
+}
