@@ -86,6 +86,11 @@ Other limits worth knowing before you cite a number:
 ## Quickstart
 
 ```bash
+git clone --branch claude/llm-shopping-benchmark-sq6dr3 \
+  https://github.com/ajfrai/Abraham-Fraifeld.git
+cd Abraham-Fraifeld/shopper-refinement-bench
+
+python3 -m venv .venv && source .venv/bin/activate   # Python 3.10+
 pip install -r requirements.txt
 
 # 1. Fetch ESCI shards (~120-200 MB each; 3 shards -> ~1.2k seeds)
@@ -129,9 +134,18 @@ the admin panel prices any configuration before you start it.
 ## Leaderboard and admin panel
 
 ```bash
-pip install -r requirements.txt
 python -m srb.server          # http://127.0.0.1:8000
 ```
+
+The corpus is committed, so the panel has data the moment the server starts. Runs need a
+key in the server's environment:
+
+```bash
+export ANTHROPIC_API_KEY=...   # and/or OPENAI_API_KEY
+python -m srb.server
+```
+
+Without a key the panel still runs `mock:v1`, which is how you check the pipeline for free.
 
 Three tabs:
 
