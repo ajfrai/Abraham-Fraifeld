@@ -1,0 +1,46 @@
+
+================================================================================================
+SHOPPER REFINEMENT BENCHMARK -- refinement-type distribution vs. real shoppers
+================================================================================================
+
+Lower TVD = closer to human. The floor is the TVD an ideal simulator would still
+show from sampling k queries. 'excess' = TVD - floor, and is the real signal.
+
+model                        prompt      TVD          95% CI  floor  excess  margin  facetMAE  novelty
+------------------------------------------------------------------------------------------------------
+mock:v1                      neutral   0.797 [0.763,0.830]  0.104   0.692   0.358     0.101   +0.073  <- does not beat marginal
+mock:v1                      persona   0.797 [0.763,0.830]  0.104   0.692   0.358     0.101   +0.073  <- does not beat marginal
+mock:v1                      log       0.797 [0.763,0.830]  0.104   0.692   0.358     0.101   +0.073  <- does not beat marginal
+
+REFERENCE POINTS (averaged over items)
+  sampling floor (k=12) : 0.104   irreducible; no simulator beats this
+  human holdout (split-half): 0.296
+  corpus marginal          : 0.358   beat this or you are only predicting the prior
+  uniform                  : 0.577
+
+REFINEMENT-TYPE DISTRIBUTION
+  class             human    model   (first run shown: mock:v1 / neutral)
+  repeat            1.4%    1.0%   h|..................|  m|..................|
+  specialization   15.3%   91.0%   h|###...............|  m|################..|
+  generalization   12.3%    7.8%   h|##................|  m|#.................|
+  substitution     59.8%    0.2%   h|###########.......|  m|..................|
+  new              11.2%    0.0%   h|##................|  m|..................|
+
+FACET-ADDITION RATE (share of refinements that add this constraint type)
+  facet            human    model
+  brand            9.6%    8.0%   h|####..............|  m|####..............|
+  color            1.2%    6.4%   h|#.................|  m|###...............|
+  size_spec        6.9%   12.4%   h|###...............|  m|######............|
+  price_value      1.6%   22.0%   h|#.................|  m|##########........|
+  material         1.3%    0.6%   h|#.................|  m|..................|
+  audience_use     5.5%    8.3%   h|##................|  m|####..............|
+  compatibility    4.9%    0.0%   h|##................|  m|..................|
+
+RUN HEALTH
+  mock:v1                    neutral  items= 200 calls=  200 refusals=  0 errors=  0 empty=  0 tok_in=       0 tok_out=       0     2.1s
+  mock:v1                    persona  items= 200 calls=  200 refusals=  0 errors=  0 empty=  0 tok_in=       0 tok_out=       0     2.1s
+  mock:v1                    log      items= 200 calls=  200 refusals=  0 errors=  0 empty=  0 tok_in=       0 tok_out=       0     2.0s
+
+novelty_gap: model minus human share of refinement tokens absent from the
+result page. Negative = the model copies the page more than people do.
+length_gap and per-item scores are in the items-*.json file.

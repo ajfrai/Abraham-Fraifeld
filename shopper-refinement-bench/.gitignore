@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+data/raw/
+results/*
+!results/sample-mock-report.txt
+.pytest_cache/
