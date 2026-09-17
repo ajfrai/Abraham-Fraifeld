@@ -75,9 +75,15 @@ class MockProvider(Provider):
 
     name = "mock"
 
-    def __init__(self, model: str = "mock-v1", seed: int = 0):
+    def __init__(self, model: str = "mock-v1", seed: int | None = None):
+        import hashlib
+
         self.model = model
-        self._seed = seed
+        # Derive the seed from the model name so different mock specs behave differently,
+        # which makes the leaderboard meaningful without spending anything.
+        self._seed = seed if seed is not None else int(
+            hashlib.sha256(model.encode()).hexdigest()[:8], 16
+        )
 
     def complete(self, system: str, user: str, *, k: int) -> Completion:
         import hashlib

@@ -109,11 +109,48 @@ python -m srb.run_eval \
 A prebuilt corpus is committed: `data/corpus_full.jsonl` (1,238 seeds / 10,217 human
 refinement pairs) and `data/corpus_dev.jsonl` (200 seeds) — so steps 1–2 are optional.
 
-**Cost.** One `(model, prompt)` run over 200 items in `batch` mode is 200 calls of roughly
-600 input / 300 output tokens. On Claude Opus 5 that is about **$0.2 per run**; the three
-prompt variants across two models is about **$1.3**. `--elicit sample` multiplies call
-count by `k`. Responses are cached under `results/.cache/`, so reruns and crash recovery
-are free.
+**Cost.** Adaptive thinking tokens are billed as output and dominate a short generation
+like this one, so budget accordingly. Measured against the shipped prompts at k=12, 200
+items:
+
+| Configuration | Calls | Est. cost |
+|---|---|---|
+| Opus 5, 1 prompt, `batch` | 200 | ~$4.20 |
+| Opus 5 + Sonnet 5, 3 prompts, `batch` | 1,200 | ~$17.60 |
+| Haiku 4.5, 3 prompts, `batch` | 600 | ~$2.50 |
+| Opus 5, 1 prompt, `sample` | 2,400 | ~$31.80 |
+
+Start on Haiku or a smaller `-n` to shake out the pipeline before spending on Opus.
+Responses are cached under `results/.cache/`, so reruns and crash recovery are free, and
+the admin panel prices any configuration before you start it.
+
+---
+
+## Leaderboard and admin panel
+
+```bash
+pip install -r requirements.txt
+python -m srb.server          # http://127.0.0.1:8000
+```
+
+Three tabs:
+
+- **Leaderboard** — models ranked by TVD, each on its most recent run. Runs are never
+  pooled across `run_id`, because two runs may differ in item count, `k` or corpus and
+  averaging them would compare models on different tests. Clicking a row opens a
+  position-on-scale meter (where the model sits between the floor, the human split-half,
+  the marginal and uniform), the human-vs-model refinement-type and constraint-type
+  distributions, and the per-prompt breakdown with confidence intervals.
+- **Run** — pick models, prompt variants, corpus, `n`, `k`, elicitation mode and effort.
+  It prices the configuration before you start it and shows actual token spend afterwards.
+- **Jobs** — live log tail from the runner, polled while a job is active, with cancel.
+
+**Security.** The panel binds to `127.0.0.1` and has no authentication, because it starts
+subprocesses and spends money through your API keys. Do not expose it to a network you do
+not control. Every field reaching the subprocess is validated against an allowlist —
+model specs must match `^(anthropic|openai|mock):[A-Za-z0-9._-]{1,64}$`, the corpus must
+resolve inside `data/`, `n` and `k` are range-bounded — and the command is passed as an
+argv list, never through a shell. That layer has its own tests.
 
 ---
 
@@ -160,14 +197,16 @@ thing being measured.
 ## Layout
 
 ```
-srb/taxonomy.py       5-class labeler + facet layer      (41 unit tests)
+srb/taxonomy.py       5-class labeler + facet layer
 srb/build_corpus.py   ESCI -> human refinement neighborhoods
 srb/prompts.py        the 3-prompt family
 srb/providers.py      anthropic / openai / deterministic mock
 srb/metrics.py        TVD, JSD, bootstrap CI, the four baselines
 srb/run_eval.py       runner with disk cache and concurrency
 srb/report.py         console report
-tests/                pytest
+srb/server.py         leaderboard + admin panel (FastAPI)
+srb/web/              dashboard front end, no build step
+tests/                98 pytest tests
 ```
 
 ```bash

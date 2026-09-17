@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shopper Refinement Benchmark</title>
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div>
+      <h1>Shopper Refinement Benchmark</h1>
+      <p class="subtitle">Do models refine shopping queries the way real shoppers do?</p>
+    </div>
+    <nav>
+      <button data-tab="leaderboard" aria-current="page">Leaderboard</button>
+      <button data-tab="run">Run</button>
+      <button data-tab="jobs">Jobs</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ------------------------------------------------------------------ -->
+  <section id="tab-leaderboard" class="panel active">
+    <div class="card">
+      <h2>Standings</h2>
+      <p class="note">
+        Total Variation Distance between the model's refinement-type distribution and real
+        shoppers'. <strong>Lower is closer to human.</strong> Each model is shown on its most
+        recent run; runs are never pooled, because they may differ in item count, k or corpus.
+        Click a row for its distributions.
+      </p>
+      <div id="leaderboard-body"></div>
+    </div>
+    <div id="detail"></div>
+  </section>
+
+  <!-- ------------------------------------------------------------------ -->
+  <section id="tab-run" class="panel">
+    <div class="card">
+      <h2>Start a run</h2>
+      <p class="note">
+        Runs execute on this machine using the API keys in the server's environment.
+        Responses are cached, so repeating an identical run costs nothing.
+      </p>
+      <div id="key-status"></div>
+      <form id="run-form">
+        <div class="field">
+          <label for="models">Models &mdash; one <code>provider:model</code> per line</label>
+          <textarea id="models" spellcheck="false"></textarea>
+          <div id="presets" style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;"></div>
+        </div>
+        <div class="field">
+          <label>Prompt variants &mdash; run all three; a result that fails the spread is not a result</label>
+          <div class="checks" id="prompts"></div>
+        </div>
+        <div class="row3">
+          <div class="field">
+            <label for="corpus">Corpus</label>
+            <select id="corpus"></select>
+          </div>
+          <div class="field">
+            <label for="n_items">Items</label>
+            <input type="number" id="n_items" value="100" min="1" max="2000">
+          </div>
+          <div class="field">
+            <label for="k">Refinements per item (k)</label>
+            <input type="number" id="k" value="12" min="1" max="50">
+          </div>
+        </div>
+        <div class="row3">
+          <div class="field">
+            <label for="elicit">Elicitation</label>
+            <select id="elicit">
+              <option value="batch">batch &mdash; 1 call for k queries (cheap)</option>
+              <option value="sample">sample &mdash; k calls (k&times; cost, more principled)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="effort">Effort (Anthropic, optional)</label>
+            <select id="effort">
+              <option value="">default</option>
+              <option value="low">low</option>
+              <option value="medium">medium</option>
+              <option value="high">high</option>
+              <option value="xhigh">xhigh</option>
+              <option value="max">max</option>
+            </select>
+          </div>
+        </div>
+        <div class="estimate" id="estimate">&nbsp;</div>
+        <div id="run-error" class="err" hidden></div>
+        <button type="submit" class="primary" id="start-btn">Start run</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------ -->
+  <section id="tab-jobs" class="panel">
+    <div class="card">
+      <h2>Jobs</h2>
+      <p class="note">Live output from the runner. Polls every two seconds while a job is active.</p>
+      <div id="jobs-body"></div>
+    </div>
+    <div class="card" id="job-log-card" hidden>
+      <h2>Log &mdash; <span id="job-log-id" class="model-name"></span></h2>
+      <p class="note" id="job-log-cmd"></p>
+      <pre class="log" id="job-log"></pre>
+    </div>
+  </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
