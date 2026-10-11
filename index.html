@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Step-by-step first aid for an untrained bystander: CPR metronome, choking, bleeding, stroke, overdose and more, with the right emergency number for your country.">
+<meta name="theme-color" content="#c8102e">
+<style>[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Bystander</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: one column, thumb-reach controls, nothing decorative. A panic page: big type, big targets, one action per screen. */
+:root{
+  --bg:#f7f6f3; --fg:#141414; --muted:#5d5a55; --line:#d9d6cf; --card:#ffffff;
+  --red:#c8102e; --red-fg:#ffffff; --amber:#e08a00; --ok:#1f7a4d;
+  --focus:#1a56db;
+  --font:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121212; --fg:#f4f2ee; --muted:#a8a49c; --line:#2e2c29; --card:#1c1b19;
+  --red:#ff3b4f; --red-fg:#160204; --amber:#ffb340; --ok:#4cc38a; --focus:#7aa7ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121212; --fg:#f4f2ee; --muted:#a8a49c; --line:#2e2c29; --card:#1c1b19;
+  --red:#ff3b4f; --red-fg:#160204; --amber:#ffb340; --ok:#4cc38a; --focus:#7aa7ff; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wrap{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:12px 40px}
+h1,h2,h3{margin:0;text-wrap:balance;line-height:1.15}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+
+/* call bar */
+.callbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px 10px;border-bottom:1px solid var(--line)}
+.call{display:flex;align-items:center;gap:12px;background:var(--red);color:var(--red-fg);border-radius:14px;padding:12px 16px;text-decoration:none;min-height:72px}
+.call .num{font-size:40px;font-weight:700;letter-spacing:.02em;font-variant-numeric:tabular-nums;line-height:1}
+.call .lbl{font-size:15px;font-weight:700;line-height:1.2}
+.call .lbl small{display:block;font-weight:400;opacity:.9}
+.callmeta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px;font-size:14px;color:var(--muted);flex-wrap:wrap}
+.callmeta select{font:inherit;font-size:14px;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:4px 8px;max-width:100%}
+
+/* home grid */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.tile{display:flex;flex-direction:column;justify-content:space-between;gap:8px;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;min-height:104px}
+.tile b{font-size:20px;line-height:1.15}
+.tile span{font-size:14px;color:var(--muted)}
+.tile.urgent{border-color:var(--red);border-width:2px}
+.tile.urgent b{color:var(--red)}
+.tile.wide{grid-column:1/-1;min-height:0;flex-direction:row;align-items:center}
+.note{font-size:14px;color:var(--muted);margin-top:18px}
+.note a{color:inherit}
+
+/* protocol panel */
+.panel{display:flex;flex-direction:column;gap:14px}
+.back{align-self:flex-start;background:none;border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:15px;background:var(--card)}
+.panel h1{font-size:30px}
+.lead{font-size:18px;color:var(--muted);margin:0}
+.warn{background:var(--card);border-left:5px solid var(--red);padding:10px 14px;border-radius:0 10px 10px 0}
+.warn b{color:var(--red)}
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;align-items:start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 14px 14px 10px;font-size:19px}
+ol.steps li::before{content:counter(s);font-weight:700;font-size:26px;line-height:1;color:var(--red);text-align:center;padding-top:2px;font-variant-numeric:tabular-nums}
+ol.steps li b{font-weight:700}
+ol.steps li small{display:block;font-size:15px;color:var(--muted);margin-top:4px}
+.sub{margin-top:8px}
+.sub h2{font-size:17px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.when{display:flex;flex-direction:column;gap:6px;margin:0;padding-left:20px;font-size:17px}
+.alt{display:flex;gap:8px;flex-wrap:wrap}
+.alt button{flex:1 1 120px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px;font-weight:700;font-size:16px}
+.alt button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.links{display:flex;flex-direction:column;gap:8px}
+.links a,.links .row{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:inherit;text-decoration:none;font-size:17px}
+.links .row .v{font-weight:700;font-variant-numeric:tabular-nums;user-select:all;-webkit-user-select:all}
+
+/* metronome */
+.metro{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;align-items:stretch}
+.metro.on{border-color:var(--amber)}
+.pulse{width:min(60vw,220px);aspect-ratio:1;max-width:100%;margin:0 auto;border-radius:50%;background:var(--amber);display:grid;place-items:center;color:#1a1200;font-weight:700;font-size:64px;font-variant-numeric:tabular-nums;transform:scale(.86);transition:transform .12s ease-out;opacity:.55}
+.metro.on .pulse{opacity:1}
+.pulse.beat{transform:scale(1);transition:transform .04s ease-in}
+.pulse small{display:block;font-size:14px;font-weight:700;text-align:center;letter-spacing:.06em;text-transform:uppercase}
+.big{background:var(--red);color:var(--red-fg);border:0;border-radius:14px;font-size:24px;font-weight:700;padding:18px;min-height:68px}
+.big.stop{background:var(--fg);color:var(--bg)}
+.stats{display:flex;justify-content:space-between;gap:8px;font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.stats b{color:var(--fg);font-size:20px;display:block}
+.cue{min-height:30px;text-align:center;font-size:20px;font-weight:700;color:var(--amber)}
+.opts{display:flex;gap:14px;flex-wrap:wrap;font-size:15px;color:var(--muted)}
+.opts label{display:flex;gap:6px;align-items:center}
+/* afterwards */
+.after{margin-top:18px;border-top:2px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:10px}
+.after h2{font-size:22px}
+.after p{margin:0;font-size:16px;color:var(--muted)}
+.outs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.outs button{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:14px 10px;font-weight:700;font-size:16px;min-height:60px;text-align:center}
+.outs button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.aftermsg{font-size:17px;display:flex;flex-direction:column;gap:10px}
+.aftermsg .ok{color:var(--ok);font-weight:700}
+.aftermsg .fallback{display:flex;flex-direction:column;gap:8px}
+.aftermsg .fallback a,.aftermsg .fallback button{display:block;text-align:center;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px;font-weight:700;font-size:16px;color:inherit;text-decoration:none}
+@media (prefers-reduced-motion:reduce){.pulse{transition:none}}
+@media (max-width:360px){.call .num{font-size:32px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="callbar">
+    <a class="call" id="callLink" href="tel:112">
+      <span class="num" id="callNum">112</span>
+      <span class="lbl">Call for an ambulance now<small id="callRegion">Put the phone on speaker and keep going</small></span>
+    </a>
+    <div class="callmeta">
+      <span id="otherNums"></span>
+      <label>Region <select id="region" aria-label="Your country"></select></label>
+    </div>
+  </div>
+
+  <main id="home">
+    <p class="eyebrow" style="margin:16px 0 4px">What is happening?</p>
+    <div class="grid" id="grid"></div>
+    <p class="note">Bystander is a first-aid prompt for someone with no training and no time. It follows current American Heart Association and Red Cross guidance. It does not replace emergency services or a trained responder. Open it before you need it and add it to your home screen.</p>
+    <p class="note">Each guide ends with one question: what happened? Answering is anonymous and goes to a public issue on the project’s GitHub page: the outcome, which guide you used, how long you did CPR and your country. Nothing else. It is the only way we know whether this page works.</p>
+  </main>
+
+  <section id="panel" class="panel" hidden></section>
+</div>
+
+<script>
+(function(){
+'use strict';
+/* ---------- Emergency numbers by region ---------- */
+/* amb: ambulance number. poison/crisis omitted where not confidently known; the page then points to the ambulance line or findahelpline.com. */
+const R = {
+  US:{n:'United States',amb:'911',poison:'1-800-222-1222',crisis:'988',crisisName:'988 Suicide & Crisis Lifeline (call or text)'},
+  CA:{n:'Canada',amb:'911',poison:'1-844-764-7669',crisis:'988',crisisName:'988 (call or text)'},
+  MX:{n:'Mexico',amb:'911',crisis:'800 911 2000',crisisName:'Línea de la Vida'},
+  GB:{n:'United Kingdom',amb:'999',alt:'112',poison:'111',poisonName:'NHS 111',crisis:'116 123',crisisName:'Samaritans'},
+  IE:{n:'Ireland',amb:'112',alt:'999',poison:'01 809 2166',crisis:'116 123',crisisName:'Samaritans'},
+  AU:{n:'Australia',amb:'000',alt:'112 from mobiles',poison:'13 11 26',crisis:'13 11 14',crisisName:'Lifeline'},
+  NZ:{n:'New Zealand',amb:'111',poison:'0800 764 766',crisis:'1737',crisisName:'1737 (call or text)'},
+  IN:{n:'India',amb:'112',alt:'108',poison:'1800-116-117',crisis:'14416',crisisName:'Tele-MANAS'},
+  DE:{n:'Germany',amb:'112',crisis:'0800 111 0 111',crisisName:'Telefonseelsorge'},
+  FR:{n:'France',amb:'15',alt:'112',crisis:'3114'},
+  ES:{n:'Spain',amb:'112',crisis:'024'},
+  IT:{n:'Italy',amb:'112',alt:'118'},
+  NL:{n:'Netherlands',amb:'112',crisis:'113',crisisName:'113 Zelfmoordpreventie'},
+  BE:{n:'Belgium',amb:'112'},
+  AT:{n:'Austria',amb:'144',alt:'112',crisis:'142',crisisName:'Telefonseelsorge'},
+  CH:{n:'Switzerland',amb:'144',alt:'112',crisis:'143',crisisName:'Die Dargebotene Hand'},
+  SE:{n:'Sweden',amb:'112'},
+  NO:{n:'Norway',amb:'113',alt:'112'},
+  DK:{n:'Denmark',amb:'112'},
+  FI:{n:'Finland',amb:'112'},
+  PL:{n:'Poland',amb:'112',alt:'999'},
+  PT:{n:'Portugal',amb:'112'},
+  JP:{n:'Japan',amb:'119',crisis:'0120-279-338',crisisName:'Yorisoi Hotline'},
+  KR:{n:'South Korea',amb:'119',crisis:'109'},
+  CN:{n:'China',amb:'120'},
+  HK:{n:'Hong Kong',amb:'999',crisis:'2896 0000',crisisName:'Samaritans Hong Kong'},
+  TW:{n:'Taiwan',amb:'119',crisis:'1925'},
+  SG:{n:'Singapore',amb:'995',crisis:'1767',crisisName:'Samaritans of Singapore'},
+  PH:{n:'Philippines',amb:'911',crisis:'1553',crisisName:'NCMH Crisis Hotline'},
+  MY:{n:'Malaysia',amb:'999',crisis:'03-7627 2929',crisisName:'Befrienders KL'},
+  TH:{n:'Thailand',amb:'1669',crisis:'1323'},
+  ID:{n:'Indonesia',amb:'118',alt:'119'},
+  VN:{n:'Vietnam',amb:'115'},
+  PK:{n:'Pakistan',amb:'1122',alt:'115'},
+  BD:{n:'Bangladesh',amb:'999'},
+  BR:{n:'Brazil',amb:'192',poison:'0800 722 6001',crisis:'188',crisisName:'CVV'},
+  AR:{n:'Argentina',amb:'107',crisis:'135'},
+  CL:{n:'Chile',amb:'131',crisis:'*4141'},
+  CO:{n:'Colombia',amb:'123',crisis:'106'},
+  PE:{n:'Peru',amb:'106',alt:'116'},
+  ZA:{n:'South Africa',amb:'10177',alt:'112 from mobiles',poison:'0861 555 777',crisis:'0800 567 567',crisisName:'SADAG'},
+  NG:{n:'Nigeria',amb:'112'},
+  KE:{n:'Kenya',amb:'999',alt:'112'},
+  EG:{n:'Egypt',amb:'123'},
+  IL:{n:'Israel',amb:'101',poison:'04-777-1900',crisis:'1201',crisisName:'ERAN'},
+  TR:{n:'Türkiye',amb:'112'},
+  SA:{n:'Saudi Arabia',amb:'997'},
+  AE:{n:'United Arab Emirates',amb:'998',alt:'999'},
+  RU:{n:'Russia',amb:'103',alt:'112'},
+  UA:{n:'Ukraine',amb:'103',alt:'112'},
+  XX:{n:'Other / not sure',amb:'112',alt:'112 works on most mobile phones worldwide; 911 is redirected in many countries'}
+};
+let region='XX';
+try{
+  const saved=localStorage.getItem('bystander.region');
+  if(saved&&R[saved]) region=saved;
+  else{
+    const langs=(navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||'']);
+    for(const l of langs){const m=/[-_]([A-Za-z]{2})\b/.exec(l||'');if(m&&R[m[1].toUpperCase()]){region=m[1].toUpperCase();break}}
+  }
+}catch(e){}
+const sel=document.getElementById('region');
+Object.keys(R).sort((a,b)=>a==='XX'?1:b==='XX'?-1:R[a].n.localeCompare(R[b].n)).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=R[k].n;sel.appendChild(o)});
+function tel(s){return 'tel:'+String(s).replace(/[^\d*#+]/g,'')}
+function applyRegion(){
+  const r=R[region];sel.value=region;
+  document.getElementById('callNum').textContent=r.amb;
+  document.getElementById('callLink').href=tel(r.amb);
+  document.getElementById('callRegion').textContent=(region==='XX'?'':r.n+'. ')+'Put the phone on speaker and keep going';
+  document.getElementById('otherNums').textContent=r.alt?('Also '+r.alt):'';
+  try{localStorage.setItem('bystander.region',region)}catch(e){}
+  if(current) render(current);
+}
+sel.addEventListener('change',()=>{region=sel.value;applyRegion()});
+
+/* ---------- Protocols ---------- */
+const AMB=()=>R[region].amb;
+const P={
+  cpr:{t:'Not breathing, or no response',short:'CPR',urgent:true,
+    lead:'Gasping, snoring or occasional breaths count as not breathing. Start now. Doing CPR on someone who did not need it does far less harm than waiting.',
+    metro:true,
+    variants:{
+      adult:{label:'Adult',steps:[
+        ['<b>Tap both shoulders hard and shout.</b> No response and not breathing normally means CPR.'],
+        ['<b>Call '+'{{AMB}}'+' on speaker.</b> Point at someone: "You, get the AED (defibrillator)."'],
+        ['<b>Kneel beside the chest.</b> Heel of one hand on the centre of the chest, lower half of the breastbone. Other hand on top, fingers locked.'],
+        ['<b>Arms straight, shoulders over your hands. Push hard and fast.</b>','At least 5 cm (2 in) deep, 100 to 120 per minute. Let the chest come all the way back up each time. Start the beat below.'],
+        ['<b>Not trained in breaths? Do not stop pushing.</b> Trained? 30 pushes, then 2 breaths, each one second, watch the chest rise.'],
+        ['<b>AED arrives: switch it on and do what it says.</b> Bare the chest, stick the pads on, let it analyse. Nobody touches them during a shock. Restart pushing immediately after.'],
+        ['<b>Swap with someone every 2 minutes.</b> Keep going until paramedics take over, the person moves or breathes, or you physically cannot continue.']
+      ]},
+      child:{label:'Child (1 yr to puberty)',steps:[
+        ['<b>Tap shoulders and shout.</b> No response and not breathing normally means CPR.'],
+        ['<b>Call '+'{{AMB}}'+' on speaker</b> and send someone for an AED. Use child pads if it has them; adult pads are fine if not.'],
+        ['<b>Heel of one hand (or both) on the centre of the chest.</b>'],
+        ['<b>Push about 5 cm (2 in) deep, 100 to 120 per minute.</b> Let the chest rise fully between pushes.'],
+        ['<b>30 pushes, then 2 gentle breaths.</b> Tilt head back, lift chin, pinch nose, seal your mouth over theirs, blow until the chest rises. Children usually stop because of breathing, so breaths matter here.'],
+        ['<b>Keep going</b> until help takes over or the child moves and breathes. Swap every 2 minutes if you can.']
+      ]},
+      infant:{label:'Baby (under 1 yr)',steps:[
+        ['<b>Tap the sole of the foot and call out.</b> No response and not breathing normally means CPR.'],
+        ['<b>Call '+'{{AMB}}'+' on speaker.</b>'],
+        ['<b>Two fingers on the breastbone, just below the nipple line.</b> If two of you: both thumbs there, hands wrapped round the chest.'],
+        ['<b>Push about 4 cm (1.5 in) deep, 100 to 120 per minute.</b> Let the chest rise fully.'],
+        ['<b>30 pushes, then 2 small breaths.</b> Head in neutral position, cover the baby’s mouth and nose with your mouth, puff gently until the chest rises.'],
+        ['<b>Keep going</b> until help takes over or the baby moves and breathes.']
+      ]}
+    }
+  },
+  choke:{t:'Choking',short:'Can’t breathe, cough or speak',urgent:true,
+    lead:'If they can cough or talk, tell them to keep coughing and stay with them. If they cannot, act now.',
+    variants:{
+      adult:{label:'Adult or child',steps:[
+        ['<b>Ask "Are you choking?"</b> Silent, clutching the throat, going blue: yes.'],
+        ['<b>Shout for someone to call '+'{{AMB}}'+'.</b> If alone, start the steps first, then call on speaker.'],
+        ['<b>5 back blows.</b> Lean them forward, support the chest with one hand, hit hard between the shoulder blades with the heel of your other hand.'],
+        ['<b>5 abdominal thrusts.</b> Stand behind, fist just above the navel, other hand over it, pull sharply inward and upward.','Pregnant or very large person: thrust on the centre of the chest instead.'],
+        ['<b>Repeat 5 and 5</b> until the object comes out or they stop responding.'],
+        ['<b>If they collapse: lower them to the ground and start CPR.</b> Each time you open the mouth for breaths, look for the object and remove it if you can see it. Never sweep blindly.']
+      ]},
+      infant:{label:'Baby (under 1 yr)',steps:[
+        ['<b>Shout for someone to call '+'{{AMB}}'+'.</b>'],
+        ['<b>Lay the baby face down along your forearm</b>, head lower than the body, holding the jaw. Rest your arm on your thigh.'],
+        ['<b>5 back blows</b> between the shoulder blades with the heel of your hand.'],
+        ['<b>Turn the baby face up</b> on your other forearm, head still lower than the body.'],
+        ['<b>5 chest thrusts</b>: two fingers on the breastbone just below the nipple line, push sharply about 4 cm (1.5 in).'],
+        ['<b>Repeat 5 and 5</b> until the object comes out or the baby goes limp. Limp: start infant CPR.']
+      ]}
+    }
+  },
+  bleed:{t:'Severe bleeding',short:'Blood pooling, spurting or soaking through',urgent:true,
+    lead:'A person can bleed to death in under five minutes. Pressure first, everything else second.',
+    steps:[
+      ['<b>Call '+'{{AMB}}'+' or get someone to.</b>'],
+      ['<b>Find exactly where the blood is coming from.</b> Open or cut clothing if needed.'],
+      ['<b>Press hard, directly on the wound, with both hands.</b> Use a cloth or gauze if you have one. Harder than feels polite. Do not lift to look.'],
+      ['<b>Arm or leg, still bleeding: tourniquet.</b> 5 to 8 cm (2 to 3 in) above the wound, not over a joint. Tighten until the bleeding stops. It will hurt. Note the time. Do not loosen it.','No tourniquet: a belt or strap twisted tight with a stick works.'],
+      ['<b>Neck, armpit, groin or torso: pack the wound.</b> Stuff gauze or clean cloth deep into it, then press hard on top and keep pressing.'],
+      ['<b>Keep them warm and lying down.</b> Keep pressure until paramedics take over.']
+    ]},
+  stroke:{t:'Stroke',short:'Face drooping, arm weak, speech odd',urgent:true,
+    lead:'Treatment works only inside a few hours. Note the time symptoms started and call now, even if they seem to be improving.',
+    steps:[
+      ['<b>B</b>alance suddenly lost? <b>E</b>yes: sudden loss of vision? <b>F</b>ace: ask them to smile. One side droop? <b>A</b>rms: raise both. One drifts down? <b>S</b>peech: slurred, wrong words, cannot repeat a sentence?'],
+      ['<b>T</b>ime: any one sign, call '+'{{AMB}}'+' now and say "stroke".'],
+      ['<b>Write down the time they were last seen normal.</b> Paramedics will ask. It decides which treatments are possible.'],
+      ['<b>Nothing to eat or drink, no aspirin.</b> Some strokes are bleeds, and swallowing may be unsafe.'],
+      ['<b>Sit or lie them down, head and shoulders slightly raised.</b> If they vomit or lose consciousness, roll them onto their side.'],
+      ['<b>Gather their medication list</b> and note what time symptoms began. Stay with them and keep talking.']
+    ]},
+  od:{t:'Overdose',short:'Unresponsive, slow or stopped breathing',urgent:true,
+    lead:'Opioids (fentanyl, heroin, oxycodone) stop breathing. Naloxone (Narcan) reverses it and cannot hurt someone who did not take opioids.',
+    steps:[
+      ['<b>Shout and rub your knuckles hard on the breastbone.</b> No response, breathing slow, shallow or stopped, gurgling, blue lips, tiny pupils: treat as overdose.'],
+      ['<b>Call '+'{{AMB}}'+' on speaker.</b> Most places protect people who call for help during an overdose.'],
+      ['<b>Give naloxone.</b> Nasal spray: peel open, tip in one nostril, press the plunger all the way. Injection: outer thigh, through clothes if needed.'],
+      ['<b>Not breathing? Rescue breaths.</b> Tilt head back, lift chin, pinch nose, 1 breath every 5 seconds. No pulse or not sure: start CPR.'],
+      ['<b>No response after 2 to 3 minutes: second dose</b> in the other nostril. Keep breathing for them.'],
+      ['<b>Breathing again: roll them onto their side</b> (recovery position). Stay. Naloxone wears off in 30 to 90 minutes and the overdose can come back. They need the ambulance even if they wake up.']
+    ]},
+  ana:{t:'Severe allergic reaction',short:'Swelling, hives, wheeze after food, sting or drug',urgent:true,
+    lead:'Anaphylaxis can close the airway in minutes. Epinephrine (adrenaline) first, then call. Antihistamines do not treat it.',
+    steps:[
+      ['<b>Signs:</b> throat or tongue swelling, hoarse voice, wheeze, trouble breathing, widespread hives, vomiting, dizziness, pale and floppy. Any breathing or circulation sign: act.'],
+      ['<b>Epinephrine auto-injector now.</b> Blue to the sky, orange to the thigh: outer middle thigh, through clothing, push hard until it clicks, hold 3 seconds.'],
+      ['<b>Call '+'{{AMB}}'+' and say "anaphylaxis".</b>'],
+      ['<b>Lie them flat with legs raised.</b> Struggling to breathe: let them sit up. Pregnant: on the left side. Do not let them stand or walk, even if they feel better.'],
+      ['<b>No improvement after 5 minutes: second injector</b> in the other thigh.'],
+      ['<b>Stops breathing: start CPR.</b> Keep the used injector to show paramedics.']
+    ]},
+  seizure:{t:'Seizure',short:'Collapsed, stiff, jerking',
+    lead:'Most seizures stop on their own within a couple of minutes. Your job is to protect them and watch the clock.',
+    steps:[
+      ['<b>Note the time it started.</b>'],
+      ['<b>Clear the space.</b> Move furniture and sharp objects. Cushion the head with something soft.'],
+      ['<b>Do not hold them down. Do not put anything in their mouth.</b> They cannot swallow their tongue.'],
+      ['<b>Loosen anything tight round the neck.</b> Remove glasses.'],
+      ['<b>When the jerking stops, roll them onto their side</b> to keep the airway clear. Stay until they are fully awake and know where they are.'],
+      ['<b>Call '+'{{AMB}}'+' if:</b> it lasts over 5 minutes, another starts before they recover, they are injured, in water, pregnant, diabetic, have trouble breathing afterwards, or this is their first seizure.']
+    ]},
+  drown:{t:'Drowning',short:'Pulled from water, not breathing',urgent:true,
+    lead:'Reach or throw, do not go. Once they are out, breaths come first.',
+    steps:[
+      ['<b>Get them out safely.</b> Reach with a pole, towel or branch, or throw something that floats. Enter the water only if trained and safe.'],
+      ['<b>Call '+'{{AMB}}'+' on speaker.</b>'],
+      ['<b>Not breathing: 5 rescue breaths first.</b> Head back, chin up, pinch nose, blow for one second each, watch the chest rise.'],
+      ['<b>Then CPR: 30 pushes, 2 breaths.</b> Use the beat on the CPR page. Do not waste time trying to drain water.'],
+      ['<b>Keep going even if they feel cold</b> and even if it takes long. Cold-water drowning survivors have recovered after prolonged CPR.'],
+      ['<b>Breathing again: side position, cover them, keep them warm.</b> They still need hospital. Lung damage shows up hours later.']
+    ]},
+  burn:{t:'Burn or scald',short:'Heat, chemical, electrical',
+    lead:'Cool water for a full 20 minutes is the treatment. It still helps up to 3 hours after the burn.',
+    steps:[
+      ['<b>Stop the burning.</b> Electrical: switch off the power before touching. Chemical: brush off powder, then flood with water.'],
+      ['<b>Cool running water, 20 minutes by the clock.</b> Cool, not icy. No ice, butter, toothpaste or creams.'],
+      ['<b>Take off rings, watches and loose clothing</b> before swelling starts. Leave anything stuck to the skin.'],
+      ['<b>Cover loosely</b> with cling film laid on (not wrapped), or a clean, non-fluffy cloth. Do not pop blisters.'],
+      ['<b>Keep the rest of them warm.</b> Large burns cause dangerous heat loss, especially in children.'],
+      ['<b>Call '+'{{AMB}}'+' for:</b> burns larger than the person’s hand, any burn on the face, hands, feet, genitals or around a joint, deep or white or charred burns, chemical or electrical burns, smoke inhalation, babies and the elderly.']
+    ]},
+  heat:{t:'Heat stroke',short:'Hot, confused, collapsed in heat',urgent:true,
+    lead:'Confusion or collapse in the heat is heat stroke until proven otherwise. Cool them first, as fast as you can, then everything else.',
+    steps:[
+      ['<b>Call '+'{{AMB}}'+'.</b> Signs: body temperature over 40 °C (104 °F), confusion, slurred speech, staggering, seizure, skin hot and either dry or sweaty.'],
+      ['<b>Move to shade or air conditioning. Strip to underwear.</b>'],
+      ['<b>Cold water immersion is best:</b> a bath, trough, pool or tub of cold water up to the neck. Hold the head up. Keep going until they are shivering or help arrives.'],
+      ['<b>No tub: soak them.</b> Douse with cold water, fan hard, put ice or cold packs on neck, armpits and groin. Wet sheets and keep them wet.'],
+      ['<b>Only give drinks if fully awake</b> and able to swallow. Nothing by mouth if confused.'],
+      ['<b>Unresponsive and not breathing normally: CPR.</b>']
+    ]},
+  cold:{t:'Hypothermia',short:'Cold, shivering stopped, confused',
+    lead:'When someone cold stops shivering and becomes confused or clumsy, they are in danger. Handle gently and warm the core, not the limbs.',
+    steps:[
+      ['<b>Call '+'{{AMB}}'+'.</b>'],
+      ['<b>Get them out of the cold, wind and wet.</b> Replace wet clothes with dry, cutting them off if needed. Insulate from the ground.'],
+      ['<b>Wrap the whole body, head included,</b> in blankets, coats, a sleeping bag or foil.'],
+      ['<b>Warm the chest, neck, armpits and groin</b> with warm (not hot) packs or skin-to-skin contact. Do not warm arms and legs first, and do not rub the skin.'],
+      ['<b>Awake and able to swallow: warm, sweet drinks.</b> No alcohol, no caffeine.'],
+      ['<b>Move them as little and as gently as possible.</b> Rough handling can stop a cold heart. Not breathing: CPR, and keep going. Cold people have been revived after very long resuscitations.']
+    ]},
+  sugar:{t:'Diabetic emergency',short:'Shaky, sweaty, confused, or passed out',
+    lead:'If a diabetic is acting drunk, sweating or confused, treat it as low blood sugar. Sugar will not hurt them if you are wrong.',
+    steps:[
+      ['<b>Awake and able to swallow: give fast sugar.</b> Half a glass of juice or regular soda, 4 glucose tablets, a tablespoon of sugar or honey, or a handful of sweets.'],
+      ['<b>Wait 15 minutes.</b> Still unwell: give the same again.'],
+      ['<b>Better: give a proper snack</b> (a sandwich, crackers, a banana) so it does not drop again.'],
+      ['<b>Drowsy, fitting or unconscious: nothing by mouth.</b> Call '+'{{AMB}}'+'. Roll them onto their side.'],
+      ['<b>If they have a glucagon kit or nasal glucagon,</b> use it: it is designed for a bystander to give.'],
+      ['<b>Not breathing normally: CPR.</b>']
+    ]},
+  recov:{t:'Unconscious but breathing',short:'Recovery position',
+    lead:'An unconscious person on their back can choke on their tongue or vomit. On their side, the airway stays open.',
+    steps:[
+      ['<b>Call '+'{{AMB}}'+'.</b> Check they are breathing normally. Not normal: go to CPR.'],
+      ['<b>Kneel beside them.</b> Straighten both legs. Put the arm nearest you out at a right angle, palm up.'],
+      ['<b>Bring the far arm across the chest</b> and hold the back of that hand against the cheek nearest you.'],
+      ['<b>With your other hand, pull the far knee up</b> so the foot is flat on the floor.'],
+      ['<b>Pull the knee towards you</b> to roll them onto their side, keeping the hand against the cheek.'],
+      ['<b>Tilt the head back</b> so the airway is open. Check breathing every minute. Suspected spine injury: only move them if the airway is at risk.']
+    ]},
+  poison:{t:'Poisoning',short:'Swallowed, breathed or splashed',
+    lead:'Call the poison line before doing anything to the person. Have the container ready.',
+    steps:[
+      ['<b>Unconscious, fitting or not breathing: call '+'{{AMB}}'+' now.</b>'],
+      ['<b>Otherwise call the poison line</b> (number below). They will tell you exactly what to do. Do not make them vomit unless told to.'],
+      ['<b>Have ready:</b> what it was (bring the container), how much, when, and the person’s age and weight.'],
+      ['<b>Swallowed: wipe out the mouth.</b> Do not give anything to drink unless told.'],
+      ['<b>Breathed in (gas, fumes): get them to fresh air</b> without exposing yourself.'],
+      ['<b>On skin or in eyes: flood with running water for 15 to 20 minutes</b> and remove soaked clothing.']
+    ],
+    extra:'poison'},
+  crisis:{t:'Someone wants to end their life',short:'Crisis line and what to say',
+    lead:'Asking directly does not plant the idea. It is the most important thing a bystander can do.',
+    steps:[
+      ['<b>Ask plainly:</b> "Are you thinking about killing yourself?" Then listen without arguing, shocked reactions or quick fixes.'],
+      ['<b>Immediate danger (has a plan and means, has taken something, is injured): call '+'{{AMB}}'+'.</b>'],
+      ['<b>Otherwise call or text the crisis line together</b> (number below). You can call it yourself for advice on helping them.'],
+      ['<b>Remove the means.</b> Medications, firearms, car keys, sharp objects. Ask them to help you do it.'],
+      ['<b>Stay with them, or make sure someone does.</b> Do not leave them alone until they are connected to help.'],
+      ['<b>Follow up tomorrow.</b> A message the next day measurably reduces risk.']
+    ],
+    extra:'crisis'}
+};
+const ORDER=['cpr','choke','bleed','stroke','od','ana','drown','heat','seizure','sugar','recov','burn','cold','poison','crisis'];
+
+/* ---------- Home grid ---------- */
+const grid=document.getElementById('grid');
+ORDER.forEach(k=>{const p=P[k];const b=document.createElement('button');b.className='tile'+(p.urgent?' urgent':'');b.innerHTML='<b>'+p.t+'</b><span>'+p.short+'</span>';b.addEventListener('click',()=>open(k));grid.appendChild(b)});
+
+/* ---------- Panel ---------- */
+const home=document.getElementById('home'),panel=document.getElementById('panel');
+let current=null,variant={};
+function open(k){current=k;render(k);home.hidden=true;panel.hidden=false;window.scrollTo(0,0);try{history.replaceState(null,'','#'+k)}catch(e){};keepAwake();if(!visit.protocols.includes(k)){visit.protocols.push(k);record()}}
+function goHome(){stopMetro();current=null;panel.hidden=true;home.hidden=false;window.scrollTo(0,0);try{history.replaceState(null,'',' ')}catch(e){}}
+function esc(s){return s.replace(/\{\{AMB\}\}/g,AMB())}
+function render(k){
+  const p=P[k];const r=R[region];
+  let steps=p.steps,vhtml='';
+  if(p.variants){
+    const keys=Object.keys(p.variants);variant[k]=variant[k]||keys[0];
+    steps=p.variants[variant[k]].steps;
+    vhtml='<div class="alt" role="group" aria-label="Who is it?">'+keys.map(v=>'<button data-v="'+v+'" aria-pressed="'+(variant[k]===v)+'">'+p.variants[v].label+'</button>').join('')+'</div>';
+  }
+  let extra='';
+  if(p.extra==='poison'){
+    extra='<div class="sub"><h2>Poison line</h2><div class="links">'+(r.poison?'<a href="'+tel(r.poison)+'"><span>'+(r.poisonName||'Poison control')+(region!=='XX'?' ('+r.n+')':'')+'</span><span class="v">'+r.poison+'</span></a>':'<div class="row"><span>No poison line listed for this region. Call the ambulance number.</span><span class="v">'+r.amb+'</span></div>')+'</div></div>';
+  }
+  if(p.extra==='crisis'){
+    extra='<div class="sub"><h2>Crisis line</h2><div class="links">'+(r.crisis?'<a href="'+tel(r.crisis)+'"><span>'+(r.crisisName||'Crisis line')+(region!=='XX'?' ('+r.n+')':'')+'</span><span class="v">'+r.crisis+'</span></a>':'')+'<a href="https://findahelpline.com" target="_blank" rel="noopener"><span>Find a helpline in any country</span><span class="v">findahelpline.com</span></a></div></div>';
+  }
+  const stepsHtml='<ol class="steps">'+steps.map(s=>'<li><div>'+esc(s[0])+(s[1]?'<small>'+esc(s[1])+'</small>':'')+'</div></li>').join('')+'</ol>';
+  const metro=p.metro?metroHtml():'';
+  panel.innerHTML='<button class="back" id="back">← All emergencies</button><h1>'+p.t+'</h1><p class="lead">'+esc(p.lead)+'</p>'+vhtml+metro+stepsHtml+extra+(k==='cpr'?'':'<div class="sub"><h2>Also</h2><div class="alt"><button data-go="cpr">Stops breathing → CPR</button><button data-go="recov">Unconscious, breathing → Side position</button></div></div>')+afterHtml(k);
+  document.getElementById('back').addEventListener('click',goHome);
+  panel.querySelectorAll('[data-v]').forEach(b=>b.addEventListener('click',()=>{variant[k]=b.dataset.v;render(k)}));
+  panel.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>open(b.dataset.go)));
+  panel.querySelectorAll('[data-o]').forEach(b=>b.addEventListener('click',()=>sendOutcome(k,b.dataset.o)));
+  if(p.metro) bindMetro();
+  if(visit.outcome) showOutcomeMsg(k,visit.outcome,visit.sent?'sent':'fallback');
+}
+
+/* ---------- CPR metronome ---------- */
+/* 110 beats/min, in the middle of the 100 to 120 range. Audio click + screen pulse + vibration where the device allows it. */
+let ac=null,timer=null,nextBeat=0,count=0,total=0,startedAt=0,running=false,mode='hands',uiTimer=null,beatN=0;
+const BPM=110,INTERVAL=60/BPM;
+function metroHtml(){
+  return '<div class="metro" id="metro"><div class="alt" role="group" aria-label="CPR style"><button data-m="hands" aria-pressed="'+(mode==='hands')+'">Hands only</button><button data-m="302" aria-pressed="'+(mode==='302')+'">30 pushes : 2 breaths</button></div>'+
+  '<div class="pulse" id="pulse"><div><span id="pcount">—</span><small>push</small></div></div>'+
+  '<div class="cue" id="cue" aria-live="assertive"></div>'+
+  '<button class="big" id="startBtn">Start the beat</button>'+
+  '<div class="stats"><span>Rate<b>'+BPM+' / min</b></span><span>Pushes<b id="total">0</b></span><span>Time<b id="elapsed">0:00</b></span><span>Next swap<b id="swap">2:00</b></span></div>'+
+  '<div class="opts"><label><input type="checkbox" id="optVoice" checked> Voice cues</label><label><input type="checkbox" id="optVib" checked> Vibrate</label></div></div>';
+}
+function bindMetro(){
+  document.getElementById('startBtn').addEventListener('click',()=>running?stopMetro():startMetro());
+  panel.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.m;panel.querySelectorAll('[data-m]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.m===mode));count=0}));
+  if(running){document.getElementById('startBtn').textContent='Stop';document.getElementById('startBtn').classList.add('stop');document.getElementById('metro').classList.add('on')}
+}
+function say(t){try{if(!document.getElementById('optVoice').checked)return;if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.rate=1.1;speechSynthesis.speak(u)}catch(e){}}
+function click(at,strong){
+  const o=ac.createOscillator(),g=ac.createGain();
+  o.type='square';o.frequency.value=strong?1200:880;
+  g.gain.setValueAtTime(0.0001,at);g.gain.exponentialRampToValueAtTime(strong?0.9:0.6,at+0.004);g.gain.exponentialRampToValueAtTime(0.0001,at+0.07);
+  o.connect(g);g.connect(ac.destination);o.start(at);o.stop(at+0.09);
+}
+function startMetro(){
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume()}catch(e){ac=null}
+  running=true;count=0;total=0;beatN=0;startedAt=Date.now();nextBeat=ac?ac.currentTime+0.1:0;
+  const btn=document.getElementById('startBtn');btn.textContent='Stop';btn.classList.add('stop');document.getElementById('metro').classList.add('on');
+  say('Push hard and fast. Follow the beat.');
+  if(ac){timer=setInterval(schedule,25)}else{timer=setInterval(()=>onBeat(0),INTERVAL*1000)}
+  uiTimer=setInterval(tickUi,250);
+  keepAwake();
+}
+function stopMetro(){
+  if(!running)return;running=false;clearInterval(timer);clearInterval(uiTimer);timer=uiTimer=null;
+  visit.cprSeconds+=Math.round((Date.now()-startedAt)/1000);visit.cprPushes+=total;record();
+  const btn=document.getElementById('startBtn');if(btn){btn.textContent='Start the beat';btn.classList.remove('stop');document.getElementById('metro').classList.remove('on');document.getElementById('cue').textContent='';}
+  try{speechSynthesis.cancel()}catch(e){}
+}
+function schedule(){
+  while(ac&&nextBeat<ac.currentTime+0.12){
+    const strong=(mode==='302')?(count%30===0):(beatN%10===0);
+    click(nextBeat,strong);
+    const delay=Math.max(0,(nextBeat-ac.currentTime)*1000);
+    setTimeout(onBeat,delay);
+    nextBeat+=INTERVAL;
+  }
+}
+function onBeat(){
+  if(!running)return;
+  beatN++;
+  const pulse=document.getElementById('pulse');if(!pulse)return;
+  if(mode==='302'){
+    if(count===30){
+      // pause for two breaths: ~4 seconds, then resume
+      count=0;document.getElementById('pcount').textContent='2';document.getElementById('cue').textContent='2 breaths, then push';say('Two breaths');
+      clearInterval(timer);timer=null;
+      setTimeout(()=>{if(!running)return;nextBeat=ac?ac.currentTime+0.1:0;document.getElementById('cue').textContent='';if(ac){timer=setInterval(schedule,25)}else{timer=setInterval(()=>onBeat(),INTERVAL*1000)}},4000);
+      return;
+    }
+    count++;total++;document.getElementById('pcount').textContent=count;
+  }else{
+    total++;document.getElementById('pcount').textContent=((total-1)%10)+1;
+  }
+  document.getElementById('total').textContent=total;
+  pulse.classList.add('beat');setTimeout(()=>pulse.classList.remove('beat'),90);
+  try{if(document.getElementById('optVib').checked&&navigator.vibrate)navigator.vibrate(35)}catch(e){}
+}
+let lastSwapWarn=-1;
+function tickUi(){
+  const s=Math.floor((Date.now()-startedAt)/1000);
+  const el=document.getElementById('elapsed');if(!el)return;
+  el.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+  const toSwap=120-(s%120);document.getElementById('swap').textContent=Math.floor(toSwap/60)+':'+String(toSwap%60).padStart(2,'0');
+  const cycle=Math.floor(s/120);
+  if(s>0&&s%120===0&&lastSwapWarn!==cycle){lastSwapWarn=cycle;document.getElementById('cue').textContent='Swap rescuers if you can';say('Two minutes. Swap rescuers if you can. Keep pushing.');setTimeout(()=>{const c=document.getElementById('cue');if(c&&c.textContent.startsWith('Swap'))c.textContent=''},6000)}
+}
+
+/* ---------- Keep the screen on ---------- */
+let lock=null;
+async function keepAwake(){try{if('wakeLock'in navigator&&!lock){lock=await navigator.wakeLock.request('screen');lock.addEventListener('release',()=>{lock=null})}}catch(e){lock=null}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&(current||running))keepAwake()});
+
+/* ---------- Outcome reporting ----------
+   One anonymous document per visit in the shared store (visits/<id>): which guides were opened,
+   CPR time and push count, country, and the outcome the bystander taps. No names, no free text.
+   When this viewer cannot write to the store, the page offers two fallbacks: send the page's
+   author a comment, or open a prefilled GitHub issue. */
+const ISSUES='https://github.com/ajfrai/abraham-fraifeld/issues/new';
+const OUT={
+  survived:{label:'They are breathing or awake',msg:'You did it. Stay with them until the ambulance arrives. They still need hospital even if they seem fine.'},
+  took_over:{label:'Paramedics took over',msg:'That is exactly what good first aid looks like. You kept them going until help arrived.'},
+  died:{label:'They did not make it',msg:'You gave them the best chance anyone could. Most cardiac arrests outside hospital are not survivable even with perfect care. This was not your fault. Talk to someone today, the crisis line below is for you too.'},
+  practice:{label:'I was practising',msg:'Good. People who have rehearsed act in seconds instead of minutes.'}
+};
+const visit={id:'',protocols:[],cprSeconds:0,cprPushes:0,outcome:'',sent:false};
+try{visit.id=sessionStorage.getItem('bystander.visit')||''}catch(e){}
+if(!visit.id){visit.id='v'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);try{sessionStorage.setItem('bystander.visit',visit.id)}catch(e){}}
+let db=null,cmts=null,dbRefused=false,writing=false,dirty=false,startedIso=new Date().toISOString();
+if(window.claude&&typeof window.claude.use==='function'){
+  window.claude.use('db').then(d=>{db=d;if(dirty)flush()}).catch(()=>{});
+  window.claude.use('comments').then(c=>{cmts=c}).catch(()=>{});
+}
+function body(){return{visit:visit.id,startedAt:startedIso,updatedAt:new Date().toISOString(),region:region,protocols:visit.protocols.slice(),cprSeconds:visit.cprSeconds,cprPushes:visit.cprPushes,outcome:visit.outcome||null,practice:visit.outcome==='practice',lang:(navigator.language||'').slice(0,12)}}
+function record(){dirty=true;return flush()}
+async function flush(){
+  if(!db||dbRefused||writing||!dirty)return false;
+  writing=true;dirty=false;let ok=false;
+  try{await db.doc('visits/'+visit.id).set(body());ok=true}
+  catch(e){if(e&&(e.code==='invalid_argument'||e.code==='not_granted'||e.code==='revoked'))dbRefused=true;else dirty=true}
+  writing=false;
+  if(dirty&&!dbRefused)setTimeout(flush,1500);
+  return ok;
+}
+async function sendOutcome(k,o){
+  if(!OUT[o])return;
+  visit.outcome=o;
+  panel.querySelectorAll('[data-o]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.o===o));
+  showOutcomeMsg(k,o,'sending');
+  let ok=false;
+  if(db&&!dbRefused){dirty=true;ok=await flush();if(!ok&&dirty){ok=await new Promise(r=>setTimeout(async()=>r(await flush()),1600))}}
+  visit.sent=ok;
+  showOutcomeMsg(k,o,ok?'sent':'fallback');
+}
+function issueUrl(k,o){
+  const t='[Bystander outcome] '+o;
+  const b=['Outcome: '+o,'Guide: '+k,'CPR: '+visit.cprSeconds+' s, '+visit.cprPushes+' pushes','Region: '+region,'Visit: '+visit.id,'Time: '+new Date().toISOString(),'','Anything you want to add (optional, please no names):'].join('\n');
+  return ISSUES+'?title='+encodeURIComponent(t)+'&body='+encodeURIComponent(b);
+}
+function showOutcomeMsg(k,o,state){
+  const el=document.getElementById('afterMsg');if(!el)return;
+  const r=R[region];
+  let h='<p>'+OUT[o].msg+'</p>';
+  if(o==='died'&&(r.crisis)) h+='<div class="links"><a href="'+tel(r.crisis)+'"><span>'+(r.crisisName||'Crisis line')+'</span><span class="v">'+r.crisis+'</span></a></div>';
+  if(state==='sending') h+='<p class="ok">Recording…</p>';
+  else if(state==='sent') h+='<p class="ok">Recorded. Thank you.</p>';
+  else h+='<p>If you can, this takes a few seconds and it is how we learn whether the page works:</p><div class="fallback">'+(cmts?'<button id="sendClaude">Send it as a comment on this page</button>':'')+'<a href="'+issueUrl(k,o)+'" target="_blank" rel="noopener">Report on GitHub (needs a GitHub account)</a></div>';
+  el.innerHTML=h;
+  const sc=document.getElementById('sendClaude');
+  if(sc) sc.addEventListener('click',async()=>{try{const res=await cmts.openComposer({element:document.getElementById('after')});if(res&&res.opened)sc.textContent='Type what happened and send it'}catch(e){sc.hidden=true}});
+}
+function afterHtml(k){
+  return '<div class="after" id="after"><h2>Afterwards: what happened?</h2><p>When it is over, tap one. It is anonymous and it is how we know this page is doing its job.</p><div class="outs">'+Object.keys(OUT).map(o=>'<button data-o="'+o+'" aria-pressed="'+(visit.outcome===o)+'">'+OUT[o].label+'</button>').join('')+'</div><div class="aftermsg" id="afterMsg"></div></div>';
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&running){visit.cprSeconds+=Math.round((Date.now()-startedAt)/1000);visit.cprPushes+=total;startedAt=Date.now();total=0;record()}});
+
+/* ---------- Boot ---------- */
+applyRegion();
+const h=(location.hash||'').replace('#','');
+if(h&&P[h])open(h);
+window.addEventListener('hashchange',()=>{const k=(location.hash||'').replace('#','');if(k&&P[k])open(k);else if(!k)goHome()});
+})();
+</script>
+
+</body>
+</html>
