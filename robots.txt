@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ajfrai.github.io/Abraham-Fraifeld/sitemap.xml

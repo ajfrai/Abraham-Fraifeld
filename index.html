@@ -5,6 +5,26 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Step-by-step first aid for an untrained bystander: CPR metronome, choking, bleeding, stroke, overdose and more, with the right emergency number for your country.">
 <meta name="theme-color" content="#c8102e">
+<link rel="canonical" href="https://ajfrai.github.io/Abraham-Fraifeld/">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bystander">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bystander">
+<meta property="og:title" content="Bystander: first aid for the first ten seconds">
+<meta property="og:description" content="CPR beat, choking, severe bleeding, stroke, overdose and more. Step by step, with your country's emergency number. Works offline. Save it before you need it.">
+<meta property="og:url" content="https://ajfrai.github.io/Abraham-Fraifeld/">
+<meta property="og:image" content="https://ajfrai.github.io/Abraham-Fraifeld/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bystander: first aid for the first ten seconds">
+<meta name="twitter:description" content="CPR beat, choking, severe bleeding, stroke, overdose and more. Works offline.">
+<meta name="twitter:image" content="https://ajfrai.github.io/Abraham-Fraifeld/og.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Bystander","url":"https://ajfrai.github.io/Abraham-Fraifeld/","applicationCategory":"HealthApplication","operatingSystem":"Any","description":"Step-by-step first aid for an untrained bystander: CPR metronome, choking, severe bleeding, stroke, opioid overdose, anaphylaxis, drowning and more, with the emergency number for your country. Works offline.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"inLanguage":"en"}</script>
 <style>[hidden]{display:none!important}img{max-width:100%}</style>
 <title>Bystander</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
@@ -87,6 +107,15 @@ ol.steps li small{display:block;font-size:15px;color:var(--muted);margin-top:4px
 .cue{min-height:30px;text-align:center;font-size:20px;font-weight:700;color:var(--amber)}
 .opts{display:flex;gap:14px;flex-wrap:wrap;font-size:15px;color:var(--muted)}
 .opts label{display:flex;gap:6px;align-items:center}
+/* keep on your phone */
+.keep{margin-top:18px;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.keep h2{font-size:20px}
+.keep p{margin:0;font-size:16px;color:var(--muted)}
+.keep .row{display:flex;gap:8px;flex-wrap:wrap}
+.keep button{flex:1 1 150px;border:0;border-radius:12px;padding:14px 12px;font-weight:700;font-size:17px;min-height:54px;background:var(--fg);color:var(--bg)}
+.keep button.alt2{background:var(--bg);color:var(--fg);border:1px solid var(--line)}
+.keep .status{font-size:15px;color:var(--ok);font-weight:700}
+.keep .url{user-select:all;-webkit-user-select:all;font-weight:700;word-break:break-all;color:var(--fg)}
 /* afterwards */
 .after{margin-top:18px;border-top:2px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:10px}
 .after h2{font-size:22px}
@@ -119,8 +148,9 @@ ol.steps li small{display:block;font-size:15px;color:var(--muted);margin-top:4px
   <main id="home">
     <p class="eyebrow" style="margin:16px 0 4px">What is happening?</p>
     <div class="grid" id="grid"></div>
-    <p class="note">Bystander is a first-aid prompt for someone with no training and no time. It follows current American Heart Association and Red Cross guidance. It does not replace emergency services or a trained responder. Open it before you need it and add it to your home screen.</p>
-    <p class="note">Each guide ends with one question: what happened? Answering is anonymous and goes to a public issue on the project’s GitHub page: the outcome, which guide you used, how long you did CPR and your country. Nothing else. It is the only way we know whether this page works.</p>
+    <div class="keep" id="keep" hidden></div>
+    <p class="note">Bystander is a first-aid prompt for someone with no training and no time. It is based on published first-aid guidance from the American Heart Association, the European Resuscitation Council and the Red Cross. It was drafted with AI and has not been reviewed by a clinician, so a first-aid course is still the best preparation. It does not replace emergency services.</p>
+    <p class="note">Each guide ends with an optional question: what happened? If you choose to report, it opens a public GitHub issue under your own GitHub account with the outcome, the guide you used, how long you did CPR and your country. Nothing is sent unless you submit it.</p>
   </main>
 
   <section id="panel" class="panel" hidden></section>
@@ -429,6 +459,7 @@ function render(k){
   panel.querySelectorAll('[data-v]').forEach(b=>b.addEventListener('click',()=>{variant[k]=b.dataset.v;render(k)}));
   panel.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>open(b.dataset.go)));
   panel.querySelectorAll('[data-o]').forEach(b=>b.addEventListener('click',()=>sendOutcome(k,b.dataset.o)));
+  bindShare();
   if(p.metro) bindMetro();
   if(visit.outcome) showOutcomeMsg(k,visit.outcome,visit.sent?'sent':'fallback');
 }
@@ -575,10 +606,47 @@ function showOutcomeMsg(k,o,state){
   if(sc) sc.addEventListener('click',async()=>{try{const res=await cmts.openComposer({element:document.getElementById('after')});if(res&&res.opened)sc.textContent='Type what happened and send it'}catch(e){sc.hidden=true}});
 }
 function afterHtml(k){
-  return '<div class="after" id="after"><h2>Afterwards: what happened?</h2><p>When it is over, tap one. It is anonymous and it is how we know this page is doing its job.</p><div class="outs">'+Object.keys(OUT).map(o=>'<button data-o="'+o+'" aria-pressed="'+(visit.outcome===o)+'">'+OUT[o].label+'</button>').join('')+'</div><div class="aftermsg" id="afterMsg"></div></div>';
+  return '<div class="after" id="after"><h2>Afterwards: what happened?</h2><p>Optional. If you tell us how it went, we learn whether this page works. Nothing is sent until you submit the report on GitHub.</p><div class="outs">'+Object.keys(OUT).map(o=>'<button data-o="'+o+'" aria-pressed="'+(visit.outcome===o)+'">'+OUT[o].label+'</button>').join('')+'</div><div class="aftermsg" id="afterMsg"></div><div class="keep" style="margin-top:6px"><h2>Someone near you should have this</h2><p>Sending the link to one person is the most useful thing you can do now.</p><div class="row"><button type="button" data-share="1">Send the link</button></div><p class="status" data-sharestatus="1"></p></div></div>';
 }
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&running){visit.cprSeconds+=Math.round((Date.now()-startedAt)/1000);visit.cprPushes+=total;startedAt=Date.now();total=0;record()}});
 
+/* ---------- Keep it, share it ---------- */
+const SITE_URL='https://ajfrai.github.io/Abraham-Fraifeld/';
+let deferredInstall=null;
+const standalone=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let offlineReady=false;
+async function shareLink(statusEl){
+  const data={title:'Bystander: first aid for the first ten seconds',text:'CPR beat, choking, severe bleeding, stroke, overdose. Step by step, works offline. Save it before you need it.',url:SITE_URL};
+  let msg='';
+  try{ if(navigator.share){ await navigator.share(data); msg='Sent. Thank you.'; } }catch(e){ if(e&&e.name==='AbortError')return; }
+  if(!msg){
+    try{ await navigator.clipboard.writeText(SITE_URL); msg='Link copied. Paste it to someone.'; }catch(e){ msg='Copy this link: '+SITE_URL; }
+  }
+  document.querySelectorAll('[data-sharestatus]').forEach(el=>{el.textContent=msg});
+  if(statusEl)statusEl.textContent=msg;
+}
+function renderKeep(){
+  const el=document.getElementById('keep');if(!el)return;
+  if(standalone){ el.innerHTML='<h2>Pass it on</h2><p>You have it on your phone. The next person who needs it should too.</p><div class="row"><button type="button" data-share="1">Send the link</button></div><p class="status" data-sharestatus="1"></p>'; el.hidden=false; bindShare(); return; }
+  let how='';
+  if(deferredInstall) how='<div class="row"><button type="button" id="installBtn">Save to this phone</button><button type="button" class="alt2" data-share="1">Send to someone</button></div>';
+  else if(isIOS) how='<p>Tap the Share button in Safari, then Add to Home Screen. It then opens in one tap, even without signal.</p><div class="row"><button type="button" data-share="1">Send to someone</button></div>';
+  else how='<p>Use your browser menu and choose Install app or Add to Home Screen. It then opens in one tap, even without signal.</p><div class="row"><button type="button" data-share="1">Send to someone</button></div>';
+  el.innerHTML='<h2>Save it before you need it</h2><p>In an emergency there is no time to search. Keep this on your home screen and send it to one person.</p>'+how+(offlineReady?'<p class="status">Saved for offline use.</p>':'')+'<p class="status" data-sharestatus="1"></p>';
+  el.hidden=false; bindShare();
+  const ib=document.getElementById('installBtn');
+  if(ib) ib.addEventListener('click',async()=>{ try{ deferredInstall.prompt(); await deferredInstall.userChoice; }catch(e){} deferredInstall=null; renderKeep(); });
+}
+function bindShare(){ document.querySelectorAll('[data-share]').forEach(b=>{ if(b.dataset.bound)return; b.dataset.bound='1'; b.addEventListener('click',()=>shareLink(null)); }); }
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;renderKeep();});
+window.addEventListener('appinstalled',()=>{deferredInstall=null;renderKeep();});
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').then(()=>navigator.serviceWorker.ready).then(()=>{offlineReady=true;renderKeep();}).catch(()=>{});
+  });
+}
+renderKeep();
 /* ---------- Boot ---------- */
 applyRegion();
 const h=(location.hash||'').replace('#','');
