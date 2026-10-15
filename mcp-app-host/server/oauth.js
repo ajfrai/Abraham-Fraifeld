@@ -65,7 +65,7 @@ async function discover(endpoint) {
         supported: true,
         issuer,
         resource: resource.body?.resource || origin,
-        scopesSupported: meta.body.scopes_supported || resource.body?.scopes_supported || [],
+        scopesSupported: chooseScopes(resource.body?.scopes_supported, meta.body.scopes_supported),
         authorizationEndpoint: meta.body.authorization_endpoint,
         tokenEndpoint: meta.body.token_endpoint,
         registrationEndpoint: meta.body.registration_endpoint || null,
@@ -76,6 +76,22 @@ async function discover(endpoint) {
   }
 
   return { supported: false, issuer, reason: 'no OAuth metadata published at this origin' };
+}
+
+/**
+ * The resource's own scopes_supported is what the MCP server needs; the AS
+ * list describes the whole identity provider and can be unrelated — Adobe IMS
+ * advertises `openid email profile` and rejects them for its MCP resource.
+ * offline_access is the one AS scope worth borrowing: without it there is no
+ * refresh token, and resources rarely list it themselves.
+ */
+function chooseScopes(resourceScopes, asScopes) {
+  if (!resourceScopes?.length) return asScopes || [];
+  const scopes = [...resourceScopes];
+  if (asScopes?.includes('offline_access') && !scopes.includes('offline_access')) {
+    scopes.push('offline_access');
+  }
+  return scopes;
 }
 
 /**

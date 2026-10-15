@@ -43,6 +43,15 @@
       }
     },
     {
+      "id": "adobe",
+      "label": "Adobe Creativity",
+      "endpoint": "https://adobe-creativity-gemini.adobe.io/mcp",
+      "notes": "Adobe creative apps. Every call, tools/list included, needs an Adobe ID login via IMS (dynamic registration). IMS only accepts loopback or allowlisted redirect URIs, so Connect works from a local run but not from the Vercel deployment. IMS requires openid and rejects the advertised llm.assets.* scopes for a dynamically registered client, hence the explicit list.",
+      "oauth": {
+        "scopes": ["AdobeID", "openid", "offline_access"]
+      }
+    },
+    {
       "id": "deepwiki",
       "label": "DeepWiki (data only)",
       "endpoint": "https://mcp.deepwiki.com/mcp",
