@@ -170,96 +170,113 @@
 
 <script>
   (function () {
-    var KEY = "simple-todo-items";
-    var items = [];
+    var tasks = [];
+    var listEl = document.getElementById("list");
+    var emptyEl = document.getElementById("empty");
+    var countEl = document.getElementById("count");
+    var clearBtn = document.getElementById("clear-done");
+    var input = document.getElementById("new-task");
 
-    function load() {
-      try {
-        var raw = localStorage.getItem(KEY);
-        items = raw ? JSON.parse(raw) : [];
-        if (!Array.isArray(items)) items = [];
-      } catch (e) {
-        items = [];
+    function api(method, url, body) {
+      var opts = { method: method, headers: {} };
+      if (body !== undefined) {
+        opts.headers["Content-Type"] = "application/json";
+        opts.body = JSON.stringify(body);
       }
+      return fetch(url, opts).then(function (res) {
+        if (!res.ok) {
+          return res.json().catch(function () { return {}; }).then(function (data) {
+            throw new Error(data.error || ("Request failed (" + res.status + ")"));
+          });
+        }
+        return res.status === 204 ? null : res.json();
+      });
     }
 
-    function save() {
-      try {
-        localStorage.setItem(KEY, JSON.stringify(items));
-      } catch (e) {
-        /* Storage may be blocked; the list still works for this visit. */
-      }
+    function showError(message) {
+      countEl.textContent = message;
     }
 
     function render() {
-      var list = document.getElementById("list");
-      list.innerHTML = "";
-
-      items.forEach(function (item) {
+      listEl.innerHTML = "";
+      tasks.forEach(function (task) {
         var li = document.createElement("li");
-        if (item.done) li.className = "done";
+        if (task.done) li.className = "done";
 
-        var id = "task-" + item.id;
+        var id = "task-" + task.id;
         var check = document.createElement("input");
         check.type = "checkbox";
         check.id = id;
-        check.checked = item.done;
+        check.checked = task.done;
         check.addEventListener("change", function () {
-          item.done = check.checked;
-          save();
-          render();
+          var next = check.checked;
+          api("PATCH", "/api/tasks/" + task.id, { done: next })
+            .then(function (updated) {
+              task.done = updated.done;
+              render();
+            })
+            .catch(function (err) { showError(err.message); check.checked = !next; });
         });
 
         var label = document.createElement("label");
         label.htmlFor = id;
-        label.textContent = item.text;
+        label.textContent = task.text;
 
         var del = document.createElement("button");
         del.type = "button";
         del.className = "delete";
-        del.setAttribute("aria-label", "Delete " + item.text);
+        del.setAttribute("aria-label", "Delete " + task.text);
         del.textContent = "Delete";
         del.addEventListener("click", function () {
-          items = items.filter(function (i) { return i.id !== item.id; });
-          save();
-          render();
+          api("DELETE", "/api/tasks/" + task.id)
+            .then(function () {
+              tasks = tasks.filter(function (t) { return t.id !== task.id; });
+              render();
+            })
+            .catch(function (err) { showError(err.message); });
         });
 
         li.appendChild(check);
         li.appendChild(label);
         li.appendChild(del);
-        list.appendChild(li);
+        listEl.appendChild(li);
       });
 
-      var remaining = items.filter(function (i) { return !i.done; }).length;
-      document.getElementById("empty").hidden = items.length > 0;
-      document.getElementById("count").textContent =
-        remaining + (remaining === 1 ? " task left" : " tasks left");
-      document.getElementById("clear-done").hidden = items.every(function (i) { return !i.done; });
+      var remaining = tasks.filter(function (t) { return !t.done; }).length;
+      emptyEl.hidden = tasks.length > 0;
+      countEl.textContent = remaining + (remaining === 1 ? " task left" : " tasks left");
+      clearBtn.hidden = tasks.every(function (t) { return !t.done; });
+    }
+
+    function load() {
+      api("GET", "/api/tasks")
+        .then(function (data) { tasks = data; render(); })
+        .catch(function (err) { showError("Could not load tasks: " + err.message); });
     }
 
     document.getElementById("add-form").addEventListener("submit", function (e) {
       e.preventDefault();
-      var input = document.getElementById("new-task");
       var text = input.value.trim();
-      if (!text) {
-        input.focus();
-        return;
-      }
-      items.push({ id: Date.now() + Math.random().toString(36).slice(2, 6), text: text, done: false });
-      input.value = "";
-      save();
-      render();
-      input.focus();
+      if (!text) { input.focus(); return; }
+      api("POST", "/api/tasks", { text: text })
+        .then(function (task) {
+          tasks.push(task);
+          input.value = "";
+          render();
+          input.focus();
+        })
+        .catch(function (err) { showError(err.message); });
     });
 
-    document.getElementById("clear-done").addEventListener("click", function () {
-      items = items.filter(function (i) { return !i.done; });
-      save();
-      render();
+    clearBtn.addEventListener("click", function () {
+      api("DELETE", "/api/tasks/completed")
+        .then(function () {
+          tasks = tasks.filter(function (t) { return !t.done; });
+          render();
+        })
+        .catch(function (err) { showError(err.message); });
     });
 
     load();
-    render();
   })();
 </script>
